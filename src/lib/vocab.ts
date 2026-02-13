@@ -2,21 +2,26 @@ import Decimal from "decimal.js";
 
 Decimal.set({ precision: 70 });
 
-type DimensionType = "time" | "length" | "mass" | "velocity";
 type MeasurementSystemType = "marks" | "metric" | "customary" | "caesium";
-type PlanckUnitType = "t_P" | "l_P" | "m_P" | "c";
-type PlanckValueType = {
-  valueInPlanckUnit: Decimal;
-  planckUnit: PlanckUnitType;
-};
 
 export interface Unit {
   id: string;
   names: string[];
-  dimension: DimensionType;
   system: MeasurementSystemType;
   prefixes: boolean;
-  value: PlanckValueType;
+}
+
+export interface TimeUnit extends Unit {
+  planckTimeValue: Decimal;
+}
+export interface LengthUnit extends Unit {
+  planckLengthValue: Decimal;
+}
+export interface MassUnit extends Unit {
+  planckMassValue: Decimal;
+}
+export interface SpeedUnit extends Unit {
+  speedOfLightValue: Decimal;
 }
 
 export interface Prefix {
@@ -195,119 +200,79 @@ export const AllPrefixes: Prefix[] = [
 // TIME UNITS
 //
 
-export const tim: Unit = {
+export const tim: TimeUnit = {
   id: "tim",
   names: ["tim", "tims"],
-  dimension: "time",
   system: "marks",
   prefixes: true,
-  value: {
-    valueInPlanckUnit: Decimal("1e44"), // 10^44 by definition
-    planckUnit: "t_P",
-  },
+  planckTimeValue: Decimal("1e44"), // 10^44 by definition
 };
 
-export const second: Unit = {
+export const second: TimeUnit = {
   id: "second",
   names: ["second", "seconds", "s", "sec"],
-  dimension: "time",
   system: "caesium",
   prefixes: true,
-  value: {
-    valueInPlanckUnit: Decimal("1.85485844e43"), // https://www.wolframalpha.com/input?i=N%5B1+second+in+Planck+times%2C+10%5D
-    planckUnit: "t_P",
-  },
+  planckTimeValue: Decimal("1.85485844e43"), // https://www.wolframalpha.com/input?i=N%5B1+second+in+Planck+times%2C+10%5D
 };
-export const minute: Unit = {
+export const minute: TimeUnit = {
   id: "minute",
   names: ["minute", "minutes", "min"],
-  dimension: "time",
   system: "caesium",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("1.112915064e45"), // https://www.wolframalpha.com/input?i=N%5B1+minute+in+Planck+times%2C+10%5D
-    planckUnit: "t_P",
-  },
+  planckTimeValue: Decimal("1.112915064e45"), // https://www.wolframalpha.com/input?i=N%5B1+minute+in+Planck+times%2C+10%5D
 };
-export const hour: Unit = {
+export const hour: TimeUnit = {
   id: "hour",
   names: ["hour", "hours", "h", "hr"],
-  dimension: "time",
   system: "caesium",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("6.677490384e46"), // https://www.wolframalpha.com/input?i=N%5B1+hour+in+Planck+times%2C+10%5D
-    planckUnit: "t_P",
-  },
+  planckTimeValue: Decimal("6.677490384e46"), // https://www.wolframalpha.com/input?i=N%5B1+hour+in+Planck+times%2C+10%5D
 };
-export const day: Unit = {
+export const day: TimeUnit = {
   id: "day",
   names: ["day", "days"],
-  dimension: "time",
   system: "caesium",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("1.602597692e48"), // https://www.wolframalpha.com/input?i=N%5B1+day+in+Planck+times%2C+10%5D
-    planckUnit: "t_P",
-  },
+  planckTimeValue: Decimal("1.602597692e48"), // https://www.wolframalpha.com/input?i=N%5B1+day+in+Planck+times%2C+10%5D
 };
-export const week: Unit = {
+export const week: TimeUnit = {
   id: "week",
   names: ["week", "weeks"],
-  dimension: "time",
   system: "caesium",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("1.121818385e49"), // https://www.wolframalpha.com/input?i=N%5B1+week+in+Planck+times%2C+10%5D
-    planckUnit: "t_P",
-  },
+  planckTimeValue: Decimal("1.121818385e49"), // https://www.wolframalpha.com/input?i=N%5B1+week+in+Planck+times%2C+10%5D
 };
-export const month: Unit = {
+export const month: TimeUnit = {
   id: "month",
   names: ["month", "months"],
-  dimension: "time",
   system: "caesium",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("4.87456789e49"), // https://www.wolframalpha.com/input?i=N%5B1+month+in+Planck+times%2C+10%5D
-    planckUnit: "t_P",
-  },
+  planckTimeValue: Decimal("4.87456789e49"), // https://www.wolframalpha.com/input?i=N%5B1+month+in+Planck+times%2C+10%5D
 };
-export const year: Unit = {
+export const year: TimeUnit = {
   id: "year",
   names: ["year", "years"],
-  dimension: "time",
   system: "caesium",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("5.853362877e50"), // https://www.wolframalpha.com/input?i=N%5B1+tropical+year+in+Planck+times%2C+10%5D
-    planckUnit: "t_P",
-  },
+  planckTimeValue: Decimal("5.853362877e50"), // https://www.wolframalpha.com/input?i=N%5B1+tropical+year+in+Planck+times%2C+10%5D
 };
-export const decade: Unit = {
+export const decade: TimeUnit = {
   id: "decade",
   names: ["decade", "decades"],
-  dimension: "time",
   system: "caesium",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("5.853362877e51"), // year plus 1 magnitude
-    planckUnit: "t_P",
-  },
+  planckTimeValue: Decimal("5.853362877e51"), // year plus 1 magnitude
 };
-export const century: Unit = {
+export const century: TimeUnit = {
   id: "century",
   names: ["century", "centuries"],
-  dimension: "time",
   system: "caesium",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("5.853362877e52"), // year plus 2 magnitude
-    planckUnit: "t_P",
-  },
+  planckTimeValue: Decimal("5.853362877e52"), // year plus 2 magnitude
 };
 
-export const timeUnits: Unit[] = [
+export const allTimeUnits: TimeUnit[] = [
   tim,
   second,
   minute,
@@ -324,76 +289,59 @@ export const timeUnits: Unit[] = [
 // LENGTH UNITS
 //
 
-export const len: Unit = {
+export const len: LengthUnit = {
   id: "len",
   names: ["len", "lens"],
-  dimension: "length",
   system: "marks",
   prefixes: true,
-  value: {
-    valueInPlanckUnit: Decimal("1e34"), // 10^34 by definition
-    planckUnit: "l_P",
-  },
+  planckLengthValue: Decimal("1e34"), // 10^34 by definition
 };
 
-export const meter: Unit = {
+export const meter: LengthUnit = {
   id: "meter",
   names: ["meter", "meters", "m"],
-  dimension: "length",
   system: "metric",
   prefixes: true,
-  value: {
-    valueInPlanckUnit: Decimal("6.187142499e34"), // https://www.wolframalpha.com/input?i=N%5B1+meter+in+Planck+lengths%2C+10%5D
-    planckUnit: "l_P",
-  },
+  planckLengthValue: Decimal("6.187142499e34"), // https://www.wolframalpha.com/input?i=N%5B1+meter+in+Planck+lengths%2C+10%5D
 };
 
-export const inch: Unit = {
+export const inch: LengthUnit = {
   id: "inch",
   names: ["inch", "inches", "in"],
-  dimension: "length",
   system: "customary",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("1.571534195e33"), // https://www.wolframalpha.com/input?i=N%5B1+inch+in+Planck+lengths%2C+10%5D
-    planckUnit: "l_P",
-  },
+  planckLengthValue: Decimal("1.571534195e33"), // https://www.wolframalpha.com/input?i=N%5B1+inch+in+Planck+lengths%2C+10%5D
 };
-export const foot: Unit = {
+export const foot: LengthUnit = {
   id: "foot",
   names: ["foot", "feet", "ft"],
-  dimension: "length",
   system: "customary",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("1.885841034e34"), // https://www.wolframalpha.com/input?i=N%5B1+foot+in+Planck+lengths%2C+10%5D
-    planckUnit: "l_P",
-  },
+  planckLengthValue: Decimal("1.885841034e34"), // https://www.wolframalpha.com/input?i=N%5B1+foot+in+Planck+lengths%2C+10%5D
 };
-export const yard: Unit = {
+export const yard: LengthUnit = {
   id: "yard",
   names: ["yard", "yards", "yd"],
-  dimension: "length",
   system: "customary",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("5.657523101e34"), // https://www.wolframalpha.com/input?i=N%5B1+yard+in+Planck+lengths%2C+10%5D
-    planckUnit: "l_P",
-  },
+  planckLengthValue: Decimal("5.657523101e34"), // https://www.wolframalpha.com/input?i=N%5B1+yard+in+Planck+lengths%2C+10%5D
 };
-export const mile: Unit = {
+export const mile: LengthUnit = {
   id: "mile",
   names: ["mile", "miles", "mi"],
-  dimension: "length",
   system: "customary",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("9.957240658e37"), // https://www.wolframalpha.com/input?i=N%5B1+mile+in+Planck+lengths%2C+10%5D
-    planckUnit: "l_P",
-  },
+  planckLengthValue: Decimal("9.957240658e37"), // https://www.wolframalpha.com/input?i=N%5B1+mile+in+Planck+lengths%2C+10%5D
 };
 
-export const lengthUnits: Unit[] = [len, meter, inch, foot, yard, mile];
+export const allLengthUnits: LengthUnit[] = [
+  len,
+  meter,
+  inch,
+  foot,
+  yard,
+  mile,
+];
 
 //
 // MASS UNITS
@@ -402,110 +350,74 @@ export const lengthUnits: Unit[] = [len, meter, inch, foot, yard, mile];
 // Wolfram Alpha had trouble when I tried to specify digits and wasn't precise
 // enough, so I sometimes had to chain calculations together
 
-export const maz: Unit = {
+export const maz: MassUnit = {
   id: "maz",
   names: ["maz"],
-  dimension: "mass",
   system: "marks",
   prefixes: true,
-  value: {
-    valueInPlanckUnit: Decimal("1e8"), // 10^8 by definition
-    planckUnit: "m_P",
-  },
+  planckMassValue: Decimal("1e8"), // 10^8 by definition
 };
 
-export const gram: Unit = {
+export const gram: MassUnit = {
   // even though the SI base unit is kilogram, we use grams to avoid complicating the prefixes
   id: "gram",
   names: ["gram", "grams", "g"],
-  dimension: "mass",
   system: "metric",
   prefixes: true,
-  value: {
-    valueInPlanckUnit: Decimal("45947"), // https://www.wolframalpha.com/input?i=1+gram+in+Planck+masses
-    planckUnit: "m_P",
-  },
+  planckMassValue: Decimal("45947"), // https://www.wolframalpha.com/input?i=1+gram+in+Planck+masses
 };
-export const tonne: Unit = {
+export const tonne: MassUnit = {
   id: "tonne",
   names: ["tonne", "tonnes"],
-  dimension: "mass",
   system: "metric",
   prefixes: true,
-  value: {
-    valueInPlanckUnit: Decimal("4.5947e10"), // https://www.wolframalpha.com/input?i=1+gram+in+Planck+masses
-    planckUnit: "m_P",
-  },
+  planckMassValue: Decimal("4.5947e10"), // https://www.wolframalpha.com/input?i=1+gram+in+Planck+masses
 };
 
-export const pound: Unit = {
+export const pound: MassUnit = {
   id: "pound",
   names: ["pound", "pounds", "lb", "lbs"],
-  dimension: "mass",
   system: "customary",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("20841208.62439"), // gram times 453.59237
-    planckUnit: "m_P",
-  },
+  planckMassValue: Decimal("20841208.62439"), // gram times 453.59237
 };
-export const ounce: Unit = {
+export const ounce: MassUnit = {
   id: "ounce",
   names: ["ounce", "ounces", "oz"],
-  dimension: "mass",
   system: "customary",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("1.302575539e6"), // pound divided by 16
-    planckUnit: "m_P",
-  },
+  planckMassValue: Decimal("1.302575539e6"), // pound divided by 16
 };
-export const dram: Unit = {
+export const dram: MassUnit = {
   id: "dram",
   names: ["dram", "drams", "dr"],
-  dimension: "mass",
   system: "customary",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("81410.97118"), // pound divided by 256
-    planckUnit: "m_P",
-  },
+  planckMassValue: Decimal("81410.97118"), // pound divided by 256
 };
-export const grain: Unit = {
+export const grain: MassUnit = {
   id: "grain",
   names: ["grain", "grains"],
-  dimension: "mass",
   system: "customary",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("2977.315517"), // pound divided by 7000
-    planckUnit: "m_P",
-  },
+  planckMassValue: Decimal("2977.315517"), // pound divided by 7000
 };
-export const quarter: Unit = {
+export const quarter: MassUnit = {
   id: "quarter",
   names: ["quarter", "quarters", "qr"],
-  dimension: "mass",
   system: "customary",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("5.210302156e8"), // pound times 25
-    planckUnit: "m_P",
-  },
+  planckMassValue: Decimal("5.210302156e8"), // pound times 25
 };
-export const ton: Unit = {
+export const ton: MassUnit = {
   id: "ton",
   names: ["ton", "tons"],
-  dimension: "mass",
   system: "customary",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("4.168241724e10"), // pound times 2000
-    planckUnit: "m_P",
-  },
+  planckMassValue: Decimal("4.168241724e10"), // pound times 2000
 };
 
-export const massUnits: Unit[] = [
+export const allMassUnits: MassUnit[] = [
   maz,
   gram,
   tonne,
@@ -521,51 +433,35 @@ export const massUnits: Unit[] = [
 // VELOCITY UNITS
 //
 
-export const vel: Unit = {
+export const vel: SpeedUnit = {
   id: "vel",
   names: ["vel", "vels"],
-  dimension: "velocity",
   system: "marks",
   prefixes: true,
-  value: {
-    valueInPlanckUnit: Decimal("1e-10"), // 10^-10 by definition
-    planckUnit: "c",
-  },
+  speedOfLightValue: Decimal("1e-10"), // 10^-10 by definition
 };
 
-export const mps: Unit = {
+export const mps: SpeedUnit = {
   id: "mps",
   names: ["m/s", "mps"],
-  dimension: "velocity",
   system: "metric",
   prefixes: true,
-  value: {
-    valueInPlanckUnit: Decimal("3.335640952e-9"), // https://www.wolframalpha.com/input?i=N%5B1+meter+per+second+in+speed+of+light%2C+10%5D
-    planckUnit: "c",
-  },
+  speedOfLightValue: Decimal("3.335640952e-9"), // https://www.wolframalpha.com/input?i=N%5B1+meter+per+second+in+speed+of+light%2C+10%5D
 };
-export const kph: Unit = {
+export const kph: SpeedUnit = {
   id: "kph",
   names: ["km/h", "kph"],
-  dimension: "velocity",
   system: "metric",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("9.265669311e-10"), // https://www.wolframalpha.com/input?i=N%5B1+kilometer+per+hour+in+speed+of+light%2C+10%5D
-    planckUnit: "c",
-  },
+  speedOfLightValue: Decimal("9.265669311e-10"), // https://www.wolframalpha.com/input?i=N%5B1+kilometer+per+hour+in+speed+of+light%2C+10%5D
 };
 
-export const mph: Unit = {
+export const mph: SpeedUnit = {
   id: "mph",
   names: ["mph"],
-  dimension: "velocity",
   system: "customary",
   prefixes: false,
-  value: {
-    valueInPlanckUnit: Decimal("1.491164931e-9"), // https://www.wolframalpha.com/input?i=N%5B1+mile+per+hour+in+speed+of+light%2C+10%5D
-    planckUnit: "c",
-  },
+  speedOfLightValue: Decimal("1.491164931e-9"), // https://www.wolframalpha.com/input?i=N%5B1+mile+per+hour+in+speed+of+light%2C+10%5D
 };
 
-export const speedUnits: Unit[] = [vel, mps, kph, mph];
+export const allSpeedUnits: SpeedUnit[] = [vel, mps, kph, mph];
