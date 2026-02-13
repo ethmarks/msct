@@ -42,7 +42,7 @@ export const AllPrefixes: Prefix[] = [
   },
   {
     id: "hecto",
-    symbol: "hc",
+    symbol: "h",
     magnitude: Decimal("1e2"),
   },
   {
@@ -67,7 +67,7 @@ export const AllPrefixes: Prefix[] = [
   },
   {
     id: "hebdo",
-    symbol: "H",
+    symbol: "HB",
     magnitude: Decimal("1e7"),
   },
   // no prefix for 10^8
