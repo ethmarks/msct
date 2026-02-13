@@ -23,6 +23,7 @@ export interface MassUnit extends Unit {
 export interface SpeedUnit extends Unit {
   speedOfLightValue: Decimal;
 }
+export type AnyUnit = TimeUnit | LengthUnit | MassUnit | SpeedUnit;
 
 export interface Prefix {
   id: string;
@@ -34,7 +35,13 @@ export interface Prefix {
 // PREFIXES
 //
 
-export const AllPrefixes: Prefix[] = [
+export const emptyPrefix: Prefix = {
+  id: "",
+  symbol: "",
+  magnitude: Decimal(1),
+};
+
+export const allPrefixes: Prefix[] = [
   {
     id: "deca",
     symbol: "da",
@@ -465,3 +472,30 @@ export const mph: SpeedUnit = {
 };
 
 export const allSpeedUnits: SpeedUnit[] = [vel, mps, kph, mph];
+
+//
+// QUANTITIES
+//
+
+export interface Quantity {
+  prefix: Prefix;
+  coeff: Decimal;
+}
+
+export interface TimeQuantity extends Quantity {
+  unit: TimeUnit;
+}
+export interface LengthQuantity extends Quantity {
+  unit: LengthUnit;
+}
+export interface MassQuantity extends Quantity {
+  unit: MassUnit;
+}
+export interface SpeedQuantity extends Quantity {
+  unit: SpeedUnit;
+}
+export type AnyQuantity =
+  | TimeQuantity
+  | LengthQuantity
+  | MassQuantity
+  | SpeedQuantity;
