@@ -587,6 +587,7 @@
         "npm:@sveltejs/vite-plugin-svelte@^6.2.1",
         "npm:@tsconfig/svelte@^5.0.6",
         "npm:@types/node@^24.10.1",
+        "npm:decimal.js@^10.6.0",
         "npm:svelte-check@^4.3.4",
         "npm:svelte@^5.45.2",
         "npm:typescript@~5.9.3",
