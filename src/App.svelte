@@ -1,49 +1,64 @@
 <script lang="ts">
-    import type Decimal from "decimal.js";
+    import Decimal from "decimal.js";
     import {
         stringToDecimal,
         lookupPrefix,
         lookupUnit,
         convertQuantity,
     } from "./lib/convert";
-    import { type Prefix, type AnyUnit, type AnyQuantity } from "./lib/vocab";
+    import { type Prefix, type Unit, type Quantity } from "./lib/vocab";
 
     let rawCoeff: string = $state("1");
-    let rawPrefix: string = $state("kilo");
+    let rawInputPrefix: string = $state("kilo");
     let rawInputUnit: string = $state("meter");
+    let rawTargetPrefix: string = $state("deca");
     let rawTargetUnit: string = $state("len");
 
     let processedCoeff: Decimal = $derived(stringToDecimal(rawCoeff || "1"));
-    let processedPrefix: Prefix = $derived(lookupPrefix(rawPrefix || ""));
-    let processedInputUnit: AnyUnit = $derived(lookupUnit(rawInputUnit));
-    let processedTargetUnit: AnyUnit = $derived(lookupUnit(rawTargetUnit));
+    let processedInputPrefix: Prefix = $derived(
+        lookupPrefix(rawInputPrefix || ""),
+    );
+    let processedTargetPrefix: Prefix = $derived(
+        lookupPrefix(rawTargetPrefix || ""),
+    );
+    let processedInputUnit: Unit = $derived(lookupUnit(rawInputUnit));
+    let processedTargetUnit: Unit = $derived(lookupUnit(rawTargetUnit));
 
-    const convertedQuantity: AnyQuantity = $derived(
+    const convertedQuantity: Quantity = $derived(
         convertQuantity(
             {
-                prefix: processedPrefix,
+                prefix: processedInputPrefix,
                 coeff: processedCoeff,
                 unit: processedInputUnit,
             },
-            processedTargetUnit,
+            {
+                prefix: processedTargetPrefix,
+                coeff: Decimal(1),
+                unit: processedTargetUnit,
+            },
         ),
     );
 
     let output = $derived(
-        `${convertedQuantity.coeff.toNumber().toLocaleString()} ${convertedQuantity.prefix.id}${convertedQuantity.unit.names[0]}`,
+        `${convertedQuantity.coeff.toNumber().toLocaleString()} ${convertedQuantity.prefix.id}${convertedQuantity.unit.id}`,
     );
 </script>
 
 <main>
     <h1>Marks System Converter Tool (msct)</h1>
-    <div id="inputContainer">
+    <h2>Input</h2>
+    <div id="inputContainer" class="container">
         <div>
             <p>Coefficient</p>
             <input type="string" placeholder="1" bind:value={rawCoeff} />
         </div>
         <div>
             <p>Prefix</p>
-            <input type="string" placeholder="kilo" bind:value={rawPrefix} />
+            <input
+                type="string"
+                placeholder="kilo"
+                bind:value={rawInputPrefix}
+            />
         </div>
         <div>
             <p>Unit</p>
@@ -54,7 +69,16 @@
             />
         </div>
     </div>
-    <div id="targetContainer">
+    <h2>Target</h2>
+    <div id="targetContainer" class="container">
+        <div>
+            <p>Prefix</p>
+            <input
+                type="string"
+                placeholder="deca"
+                bind:value={rawTargetPrefix}
+            />
+        </div>
         <div>
             <p>Unit</p>
             <input type="string" placeholder="len" bind:value={rawTargetUnit} />
@@ -66,15 +90,15 @@
 </main>
 
 <style>
-    #inputContainer {
+    .container {
         display: flex;
         gap: 1rem;
     }
-    #inputContainer div {
+    .container div {
         display: flex;
         flex-direction: column;
     }
-    #inputContainer input {
+    .container input {
         width: 100%;
     }
 </style>
