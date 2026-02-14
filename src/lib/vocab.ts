@@ -4,7 +4,8 @@ Decimal.set({ precision: 70 });
 
 export interface Unit {
   id: string;
-  names: string[];
+  plural: string;
+  aliases?: string[];
   system: "marks" | "metric" | "customary" | "caesium";
   prefixes: boolean;
   dimensionality: "time" | "length" | "mass" | "speed";
@@ -202,7 +203,7 @@ export const allPrefixes: Prefix[] = [
 
 export const tim: Unit = {
   id: "tim",
-  names: ["tim", "tims"],
+  plural: "tims",
   system: "marks",
   prefixes: true,
   dimensionality: "time",
@@ -211,7 +212,8 @@ export const tim: Unit = {
 
 export const second: Unit = {
   id: "second",
-  names: ["second", "seconds", "s", "sec"],
+  plural: "seconds",
+  aliases: ["s", "sec"],
   system: "caesium",
   prefixes: true,
   dimensionality: "time",
@@ -219,7 +221,8 @@ export const second: Unit = {
 };
 export const minute: Unit = {
   id: "minute",
-  names: ["minute", "minutes", "min"],
+  plural: "minutes",
+  aliases: ["min"],
   system: "caesium",
   prefixes: false,
   dimensionality: "time",
@@ -227,7 +230,8 @@ export const minute: Unit = {
 };
 export const hour: Unit = {
   id: "hour",
-  names: ["hour", "hours", "h", "hr"],
+  plural: "hours",
+  aliases: ["h", "hr"],
   system: "caesium",
   prefixes: false,
   dimensionality: "time",
@@ -235,7 +239,7 @@ export const hour: Unit = {
 };
 export const day: Unit = {
   id: "day",
-  names: ["day", "days"],
+  plural: "days",
   system: "caesium",
   prefixes: false,
   dimensionality: "time",
@@ -243,7 +247,7 @@ export const day: Unit = {
 };
 export const week: Unit = {
   id: "week",
-  names: ["week", "weeks"],
+  plural: "weeks",
   system: "caesium",
   prefixes: false,
   dimensionality: "time",
@@ -251,7 +255,7 @@ export const week: Unit = {
 };
 export const month: Unit = {
   id: "month",
-  names: ["month", "months"],
+  plural: "months",
   system: "caesium",
   prefixes: false,
   dimensionality: "time",
@@ -259,7 +263,7 @@ export const month: Unit = {
 };
 export const year: Unit = {
   id: "year",
-  names: ["year", "years"],
+  plural: "years",
   system: "caesium",
   prefixes: false,
   dimensionality: "time",
@@ -267,7 +271,7 @@ export const year: Unit = {
 };
 export const decade: Unit = {
   id: "decade",
-  names: ["decade", "decades"],
+  plural: "decades",
   system: "caesium",
   prefixes: false,
   dimensionality: "time",
@@ -275,7 +279,7 @@ export const decade: Unit = {
 };
 export const century: Unit = {
   id: "century",
-  names: ["century", "centuries"],
+  plural: "centuries",
   system: "caesium",
   prefixes: false,
   dimensionality: "time",
@@ -301,7 +305,7 @@ export const allTimeUnits: Unit[] = [
 
 export const len: Unit = {
   id: "len",
-  names: ["len", "lens"],
+  plural: "lens",
   system: "marks",
   prefixes: true,
   dimensionality: "length",
@@ -310,7 +314,8 @@ export const len: Unit = {
 
 export const meter: Unit = {
   id: "meter",
-  names: ["meter", "meters", "m"],
+  plural: "meters",
+  aliases: ["m"],
   system: "metric",
   prefixes: true,
   dimensionality: "length",
@@ -319,7 +324,8 @@ export const meter: Unit = {
 
 export const inch: Unit = {
   id: "inch",
-  names: ["inch", "inches", "in"],
+  plural: "inches",
+  aliases: ["in"],
   system: "customary",
   prefixes: false,
   dimensionality: "length",
@@ -327,7 +333,8 @@ export const inch: Unit = {
 };
 export const foot: Unit = {
   id: "foot",
-  names: ["foot", "feet", "ft"],
+  plural: "feet",
+  aliases: ["ft"],
   system: "customary",
   prefixes: false,
   dimensionality: "length",
@@ -335,7 +342,8 @@ export const foot: Unit = {
 };
 export const yard: Unit = {
   id: "yard",
-  names: ["yard", "yards", "yd"],
+  plural: "yards",
+  aliases: ["yd"],
   system: "customary",
   prefixes: false,
   dimensionality: "length",
@@ -343,7 +351,8 @@ export const yard: Unit = {
 };
 export const mile: Unit = {
   id: "mile",
-  names: ["mile", "miles", "mi"],
+  plural: "miles",
+  aliases: ["mi"],
   system: "customary",
   prefixes: false,
   dimensionality: "length",
@@ -356,12 +365,13 @@ export const allLengthUnits: Unit[] = [len, meter, inch, foot, yard, mile];
 // MASS UNITS
 //
 
-// Wolfram Alpha had trouble when I tried to specify digits and wasn't precise
-// enough, so I sometimes had to chain calculations together
+// Wolfram Alpha had trouble when I tried to specify the num output digits and
+// it wasn't precise enough without the digit specification, so I sometimes
+// had to chain calculations together for these ones
 
 export const maz: Unit = {
   id: "maz",
-  names: ["maz"],
+  plural: "maz",
   system: "marks",
   prefixes: true,
   dimensionality: "mass",
@@ -371,7 +381,8 @@ export const maz: Unit = {
 export const gram: Unit = {
   // even though the SI base unit is kilogram, we use grams to avoid complicating the prefixes
   id: "gram",
-  names: ["gram", "grams", "g"],
+  plural: "grams",
+  aliases: ["g"],
   system: "metric",
   prefixes: true,
   dimensionality: "mass",
@@ -379,7 +390,7 @@ export const gram: Unit = {
 };
 export const tonne: Unit = {
   id: "tonne",
-  names: ["tonne", "tonnes"],
+  plural: "tonnes",
   system: "metric",
   prefixes: true,
   dimensionality: "mass",
@@ -388,7 +399,8 @@ export const tonne: Unit = {
 
 export const pound: Unit = {
   id: "pound",
-  names: ["pound", "pounds", "lb", "lbs"],
+  plural: "pounds",
+  aliases: ["lb", "lbs"],
   system: "customary",
   prefixes: false,
   dimensionality: "mass",
@@ -396,7 +408,8 @@ export const pound: Unit = {
 };
 export const ounce: Unit = {
   id: "ounce",
-  names: ["ounce", "ounces", "oz"],
+  plural: "ounces",
+  aliases: ["oz"],
   system: "customary",
   prefixes: false,
   dimensionality: "mass",
@@ -404,7 +417,8 @@ export const ounce: Unit = {
 };
 export const dram: Unit = {
   id: "dram",
-  names: ["dram", "drams", "dr"],
+  plural: "drams",
+  aliases: ["dr"],
   system: "customary",
   prefixes: false,
   dimensionality: "mass",
@@ -412,7 +426,7 @@ export const dram: Unit = {
 };
 export const grain: Unit = {
   id: "grain",
-  names: ["grain", "grains"],
+  plural: "grains",
   system: "customary",
   prefixes: false,
   dimensionality: "mass",
@@ -420,7 +434,8 @@ export const grain: Unit = {
 };
 export const quarter: Unit = {
   id: "quarter",
-  names: ["quarter", "quarters", "qr"],
+  plural: "quarters",
+  aliases: ["qr"],
   system: "customary",
   prefixes: false,
   dimensionality: "mass",
@@ -428,7 +443,7 @@ export const quarter: Unit = {
 };
 export const ton: Unit = {
   id: "ton",
-  names: ["ton", "tons"],
+  plural: "tons",
   system: "customary",
   prefixes: false,
   dimensionality: "mass",
@@ -453,7 +468,7 @@ export const allMassUnits: Unit[] = [
 
 export const vel: Unit = {
   id: "vel",
-  names: ["vel", "vels"],
+  plural: "vels",
   system: "marks",
   prefixes: true,
   dimensionality: "speed",
@@ -461,16 +476,16 @@ export const vel: Unit = {
 };
 
 export const mps: Unit = {
-  id: "mps",
-  names: ["m/s", "mps"],
+  id: "m/s",
+  plural: "mps",
   system: "metric",
   prefixes: true,
   dimensionality: "speed",
   planckUnitValue: Decimal("3.335640952e-9"), // https://www.wolframalpha.com/input?i=N%5B1+meter+per+second+in+speed+of+light%2C+10%5D
 };
 export const kph: Unit = {
-  id: "kph",
-  names: ["km/h", "kph"],
+  id: "km/h",
+  plural: "kph",
   system: "metric",
   prefixes: false,
   dimensionality: "speed",
@@ -479,7 +494,7 @@ export const kph: Unit = {
 
 export const mph: Unit = {
   id: "mph",
-  names: ["mph"],
+  plural: "mph",
   system: "customary",
   prefixes: false,
   dimensionality: "speed",
