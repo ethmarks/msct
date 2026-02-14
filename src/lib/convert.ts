@@ -190,3 +190,53 @@ export function nearestCaesiumUnit(input: Quantity): Unit {
 
   return currentWinner;
 }
+
+export function normalizePrefixedQuantity(input: Quantity): Quantity {
+  const targetPrefix = nearestPrefix(input);
+  const scaleFactor = input.prefix.magnitude.dividedBy(targetPrefix.magnitude);
+  const newCoeff = input.coeff.times(scaleFactor);
+  return {
+    coeff: newCoeff,
+    prefix: targetPrefix,
+    unit: input.unit,
+  };
+}
+/**
+ * Normalizes a given input quantity
+ *
+ * @param input - Quantity to normalize
+ * @returns the normalized Quantity
+ */
+export function normalizeQuantity(input: Quantity): Quantity {
+  if (input.unit.system === "caesium") {
+    const targetUnit = nearestCaesiumUnit(input);
+
+    if (targetUnit === lookupUnit("second")) {
+      return normalizePrefixedQuantity(input);
+    }
+
+    const scaleFactor = input.unit.planckUnitValue.dividedBy(
+      targetUnit.planckUnitValue,
+    );
+    const newCoeff = input.coeff.times(scaleFactor);
+
+    return {
+      coeff: newCoeff,
+      prefix: input.prefix, // should be emptyPrefix
+      unit: targetUnit,
+    };
+  } else if (input.unit.prefixes) {
+    return normalizePrefixedQuantity(input);
+  } else if (input.unit.system === "customary") {
+    const targetUnit = nearestCustomaryUnit(input);
+    const scaleFactor = input.unit.planckUnitValue.dividedBy(
+      targetUnit.planckUnitValue,
+    );
+    const newCoeff = input.coeff.times(scaleFactor);
+    return {
+      coeff: newCoeff,
+      prefix: input.prefix, // should be emptyPrefix
+      unit: targetUnit,
+    };
+  } else return input;
+}
