@@ -73,6 +73,23 @@ export function getPlanck(input: ScaledQuantity): PlanckQuantity {
   };
 }
 
+export function bestPrefix(inputCoeff: Decimal): Prefix {
+  return allPrefixes.reduce(
+    (acc, candidate) => {
+      const distance = inputCoeff
+        .logarithm()
+        .floor()
+        .minus(candidate.magnitude.logarithm().floor())
+        .abs();
+
+      return distance.lessThan(acc.distance)
+        ? { prefix: candidate, distance }
+        : acc;
+    },
+    { prefix: emptyPrefix, distance: Decimal(Infinity) },
+  ).prefix;
+}
+
 export function planckToCaesium(
   inputPlanck: PlanckQuantity,
   targetCaesiumUnit: Unit,
@@ -92,22 +109,7 @@ export function planckToCaesium(
   let prefix = emptyPrefix;
 
   if (addPrefixIfPossible && targetCaesiumUnit.takesPrefixes) {
-    const unprefixedCoeffMagnitude = unprefixedCoeff.logarithm().floor();
-
-    const bestPrefix: Prefix = allPrefixes.reduce(
-      (best, candidate) => {
-        const distance = unprefixedCoeffMagnitude
-          .minus(candidate.magnitude.logarithm().floor())
-          .abs();
-
-        return distance.lessThan(best.distance)
-          ? { prefix: candidate, distance }
-          : best;
-      },
-      { prefix: emptyPrefix, distance: Decimal(Infinity) },
-    ).prefix;
-
-    prefix = bestPrefix;
+    prefix = bestPrefix(unprefixedCoeff);
     coeff = unprefixedCoeff.dividedBy(prefix.magnitude);
   }
 
