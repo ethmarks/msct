@@ -1,7 +1,7 @@
 import Decimal from "decimal.js";
 import {
   type Prefix,
-  type Quantity,
+  type PlanckQuantity,
   type Unit,
   emptyPrefix,
   allPrefixes,
@@ -45,198 +45,24 @@ export function lookupUnit(unitName: string): Unit | undefined {
  * Calculates the number of Planck units in a given quantity by multiplying
  * the coefficient, prefix magnitude, and unit value
  *
- * @param input - the input Quantity
+ * @param coeff - the input coefficient
+ * @param prefix - the input prefix
+ * @param unit - the input unit
  * @returns a Decimal representing the number of Planck units in the quantity
  */
-export function planckUnitsInQuantity(input: Quantity): Decimal {
-  const adjustedCoeff = input.coeff.times(input.prefix.magnitude);
-  const planckUnits = adjustedCoeff.times(input.unit.planckUnitValue);
-  return planckUnits;
-}
-
-/**
- * Converts a source quantity to a compatible target quantity. Does not apply a prefix.
- *
- * @param source - the input Quantity
- * @param target - the target Quantity
- * @returns the **prefixless** Quantity result
- */
-export function convertQuantity(
-  source: Quantity,
-  target: Quantity,
-): Quantity | undefined {
-  // ensure that dimensionalities are compatible
-  if (typeof source.unit !== typeof target.unit) {
-    console.log(
-      `Tried to convert between incompatible dimensionalities "${source.unit}" and "${target.unit}"`,
-    );
-    return undefined;
-  }
-
-  const planckUnitsInSource = planckUnitsInQuantity(source);
-  const planckUnitsInTarget = planckUnitsInQuantity(target);
-
-  const resultQuantity = {
-    prefix: emptyPrefix,
-    coeff: planckUnitsInSource.dividedBy(planckUnitsInTarget),
-    unit: target.unit,
-  } as Quantity;
-  return resultQuantity;
-}
-
-/**
- * Finds the prefix that most closely matches the magnitude of a given quantity's coefficient and prefix
- *
- * @param input - the input Quantity
- * @returns
- */
-export function nearestPrefix(input: Quantity): Prefix {
-  if (!input.unit.prefixes) {
-    throw Error(
-      "tried to find nearest prefix for quantity that doesn't use prefixes",
-    );
-  }
-
-  const totalCoeff = input.coeff.times(input.prefix.magnitude).abs();
-
-  if (totalCoeff.isZero()) return emptyPrefix;
-
-  const coeffMagnitude = totalCoeff.logarithm().floor();
-
-  let currentWinner: Prefix = emptyPrefix;
-  let minDistance = Decimal(999);
-
-  for (const candidate of allPrefixes) {
-    const distance = coeffMagnitude
-      .minus(candidate.magnitude.logarithm().floor())
-      .abs();
-    if (distance.lessThan(minDistance)) {
-      minDistance = distance;
-      currentWinner = candidate;
-    }
-  }
-
-  return currentWinner;
-}
-
-/** Given a customary quantity (coeff + prefix + unit), outputs the nearest-value customary unit */
-export function nearestCustomaryUnit(input: Quantity): Unit {
-  if (input.unit.system !== "customary") {
-    throw Error(
-      "tried to find nearest customary unit for non-customary quantity",
-    );
-  }
-
-  const planckUnitsInInput = planckUnitsInQuantity(input);
-
-  const allCompatibleCustomaryUnits: Unit[] = allCustomaryUnits.filter(
-    (unit) => unit.dimensionality === input.unit.dimensionality,
-  );
-
-  let currentWinner: Unit | undefined;
-  let minDistance = Decimal(Infinity);
-
-  for (const candidate of allCompatibleCustomaryUnits) {
-    const planckUnitsInCandidate = planckUnitsInQuantity({
-      coeff: Decimal(1),
-      prefix: emptyPrefix,
-      unit: candidate,
-    });
-    const distance = planckUnitsInInput.minus(planckUnitsInCandidate).abs();
-    if (distance.lessThan(minDistance)) {
-      minDistance = distance;
-      currentWinner = candidate;
-    }
-  }
-
-  if (!currentWinner) {
-    throw Error("something has gone horribly wrong in nearestCustomaryUnit()");
-  }
-
-  return currentWinner;
-}
-
-/** Given a caesium quantity (coeff + prefix + unit), outputs the nearest-value caesium unit */
-export function nearestCaesiumUnit(input: Quantity): Unit {
-  if (input.unit.system !== "caesium") {
-    throw Error("tried to find nearest caesium unit for non-caesium quantity");
-  }
-
-  const planckUnitsInInput = planckUnitsInQuantity(input);
-
-  const allCompatibleCaesiumUnits: Unit[] = allCaesiumUnits.filter(
-    (unit) => unit.dimensionality === input.unit.dimensionality,
-  );
-
-  let currentWinner: Unit | undefined;
-  let minDistance = Decimal(Infinity);
-
-  for (const candidate of allCompatibleCaesiumUnits) {
-    const planckUnitsInCandidate = planckUnitsInQuantity({
-      coeff: Decimal(1),
-      prefix: emptyPrefix,
-      unit: candidate,
-    });
-    const distance = planckUnitsInInput.minus(planckUnitsInCandidate).abs();
-    if (distance.lessThan(minDistance)) {
-      minDistance = distance;
-      currentWinner = candidate;
-    }
-  }
-
-  if (!currentWinner) {
-    throw Error("something has gone horribly wrong in nearestCaesiumUnit()");
-  }
-
-  return currentWinner;
-}
-
-export function normalizePrefixedQuantity(input: Quantity): Quantity {
-  const targetPrefix = nearestPrefix(input);
-  const scaleFactor = input.prefix.magnitude.dividedBy(targetPrefix.magnitude);
-  const newCoeff = input.coeff.times(scaleFactor);
+export function getPlanck({
+  coeff,
+  prefix,
+  unit,
+}: {
+  coeff: Decimal;
+  prefix: Prefix;
+  unit: Unit;
+}): PlanckQuantity {
+  const adjustedCoeff = coeff.times(prefix.magnitude);
+  const planckValue = adjustedCoeff.times(unit.planckUnitValue);
   return {
-    coeff: newCoeff,
-    prefix: targetPrefix,
-    unit: input.unit,
+    value: planckValue,
+    dimensionality: unit.dimensionality,
   };
-}
-/**
- * Normalizes a given input quantity
- *
- * @param input - Quantity to normalize
- * @returns the normalized Quantity
- */
-export function normalizeQuantity(input: Quantity): Quantity {
-  if (input.unit.system === "caesium") {
-    const targetUnit = nearestCaesiumUnit(input);
-
-    if (targetUnit === lookupUnit("second")) {
-      return normalizePrefixedQuantity(input);
-    }
-
-    const scaleFactor = input.unit.planckUnitValue.dividedBy(
-      targetUnit.planckUnitValue,
-    );
-    const newCoeff = input.coeff.times(scaleFactor);
-
-    return {
-      coeff: newCoeff,
-      prefix: input.prefix, // should be emptyPrefix
-      unit: targetUnit,
-    };
-  } else if (input.unit.prefixes) {
-    return normalizePrefixedQuantity(input);
-  } else if (input.unit.system === "customary") {
-    const targetUnit = nearestCustomaryUnit(input);
-    const scaleFactor = input.unit.planckUnitValue.dividedBy(
-      targetUnit.planckUnitValue,
-    );
-    const newCoeff = input.coeff.times(scaleFactor);
-    return {
-      coeff: newCoeff,
-      prefix: input.prefix, // should be emptyPrefix
-      unit: targetUnit,
-    };
-  } else return input;
 }

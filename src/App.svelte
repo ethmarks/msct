@@ -1,12 +1,5 @@
 <script lang="ts">
     import Decimal from "decimal.js";
-    import {
-        stringToDecimal,
-        lookupPrefix,
-        lookupUnit,
-        convertQuantity,
-    } from "./lib/convert";
-    import { type Prefix, type Unit, type Quantity } from "./lib/vocab";
 
     let rawCoeff: string = $state("1");
     let rawInputPrefix: string = $state("kilo");
@@ -14,34 +7,7 @@
     let rawTargetPrefix: string = $state("deca");
     let rawTargetUnit: string = $state("len");
 
-    let processedCoeff: Decimal = $derived(stringToDecimal(rawCoeff || "1"));
-    let processedInputPrefix: Prefix = $derived(
-        lookupPrefix(rawInputPrefix || ""),
-    );
-    let processedTargetPrefix: Prefix = $derived(
-        lookupPrefix(rawTargetPrefix || ""),
-    );
-    let processedInputUnit: Unit = $derived(lookupUnit(rawInputUnit));
-    let processedTargetUnit: Unit = $derived(lookupUnit(rawTargetUnit));
-
-    const convertedQuantity: Quantity = $derived(
-        convertQuantity(
-            {
-                prefix: processedInputPrefix,
-                coeff: processedCoeff,
-                unit: processedInputUnit,
-            },
-            {
-                prefix: processedTargetPrefix,
-                coeff: Decimal(1),
-                unit: processedTargetUnit,
-            },
-        ),
-    );
-
-    let output = $derived(
-        `${convertedQuantity.coeff.toNumber().toLocaleString()} ${convertedQuantity.prefix.id}${convertedQuantity.unit.id}`,
-    );
+    let output = "";
 </script>
 
 <main>

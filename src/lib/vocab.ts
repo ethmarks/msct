@@ -2,13 +2,16 @@ import Decimal from "decimal.js";
 
 Decimal.set({ precision: 70 });
 
+type Dimensionality = "time" | "length" | "mass" | "speed";
+type MeasurementSystems = "marks" | "metric" | "customary" | "caesium";
+
 export interface Unit {
   id: string;
   plural: string;
   aliases?: string[];
-  system: "marks" | "metric" | "customary" | "caesium";
+  system: MeasurementSystems;
   prefixes: boolean;
-  dimensionality: "time" | "length" | "mass" | "speed";
+  dimensionality: Dimensionality;
   planckUnitValue: Decimal;
 }
 
@@ -18,10 +21,9 @@ export interface Prefix {
   magnitude: Decimal;
 }
 
-export interface Quantity {
-  prefix: Prefix;
-  coeff: Decimal;
-  unit: Unit;
+export interface PlanckQuantity {
+  value: Decimal;
+  dimensionality: Dimensionality;
 }
 
 //
