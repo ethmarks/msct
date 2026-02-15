@@ -60,9 +60,9 @@ export function getPlanck({
   unit: Unit;
 }): PlanckQuantity {
   const adjustedCoeff = coeff.times(prefix.magnitude);
-  const planckValue = adjustedCoeff.times(unit.planckUnitValue);
+  const planckValue = adjustedCoeff.times(unit.planck.dimensionality);
   return {
     value: planckValue,
-    dimensionality: unit.dimensionality,
+    dimensionality: unit.planck.dimensionality,
   };
 }
