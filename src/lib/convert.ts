@@ -13,12 +13,13 @@ import {
 
 Decimal.set({ precision: 70 });
 
-export function lookupPrefix(prefixId: string): Prefix | undefined {
+export function lookupPrefix(prefixId: string): Prefix {
   for (const candidate of allPrefixes) {
     if (candidate.id === prefixId.toLowerCase()) {
       return candidate;
     }
   }
+  throw new Error(`failed to look up prefix ${prefixId}`);
 }
 
 export function lookupUnit(unitName: string): Unit {

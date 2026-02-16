@@ -7,7 +7,12 @@
         getPlanck,
         genericConvert,
     } from "./lib/convert";
-    import { type ScaledQuantity, emptyPrefix } from "./lib/vocab";
+    import {
+        type ScaledQuantity,
+        type Prefix,
+        type Unit,
+        emptyPrefix,
+    } from "./lib/vocab";
 
     Decimal.set({ precision: 70 });
 
@@ -23,36 +28,52 @@
     }
 
     let inputCoeff: string = $state("1");
-    let inputPrefix: string = $state("kilo");
-    let inputUnit: string = $state("meters");
-    let targetUnit: string = $state("len");
-
-    const prefixedConvertedQuantity: ScaledQuantity = $derived(
-        genericConvert(
-            getPlanck({
-                coeff: Decimal(inputCoeff),
-                prefix: lookupPrefix(inputPrefix),
-                unit: lookupUnit(inputUnit),
-            }),
-            lookupUnit(targetUnit),
-            true,
-        ),
-    );
+    let rawInputPrefix: string = $state("kilo");
+    let rawInputUnit: string = $state("meters");
+    let rawTargetUnit: string = $state("len");
 
     let output: string = $derived.by(() => {
+        let inputPrefix: Prefix;
+        let inputUnit: Unit;
+        let targetUnit: Unit;
+
+        try {
+            inputPrefix = lookupPrefix(rawInputPrefix);
+            inputUnit = lookupUnit(rawInputUnit);
+            targetUnit = lookupUnit(rawTargetUnit);
+        } catch {
+            return "Couldn't process input";
+        }
+
+        let prefixedConvertedQuantity: ScaledQuantity;
+        let unprefixedConvertedQuantity: ScaledQuantity;
+
+        try {
+            prefixedConvertedQuantity = genericConvert(
+                getPlanck({
+                    coeff: Decimal(inputCoeff),
+                    prefix: inputPrefix,
+                    unit: inputUnit,
+                }),
+                targetUnit,
+                true,
+            );
+            unprefixedConvertedQuantity = genericConvert(
+                getPlanck({
+                    coeff: Decimal(inputCoeff),
+                    prefix: lookupPrefix(rawInputPrefix),
+                    unit: lookupUnit(rawInputUnit),
+                }),
+                lookupUnit(rawTargetUnit),
+                false,
+            );
+        } catch (e) {
+            return e;
+        }
+
         let result = displayScaledQuantity(prefixedConvertedQuantity);
 
         if (prefixedConvertedQuantity.prefix !== emptyPrefix) {
-            const unprefixedConvertedQuantity: ScaledQuantity = genericConvert(
-                getPlanck({
-                    coeff: Decimal(inputCoeff),
-                    prefix: lookupPrefix(inputPrefix),
-                    unit: lookupUnit(inputUnit),
-                }),
-                lookupUnit(targetUnit),
-                false,
-            );
-
             result += ` (${displayScaledQuantity(unprefixedConvertedQuantity)})`;
         }
 
@@ -70,18 +91,26 @@
         </div>
         <div>
             <p>Prefix</p>
-            <input type="string" placeholder="kilo" bind:value={inputPrefix} />
+            <input
+                type="string"
+                placeholder="kilo"
+                bind:value={rawInputPrefix}
+            />
         </div>
         <div>
             <p>Unit</p>
-            <input type="string" placeholder="meter" bind:value={inputUnit} />
+            <input
+                type="string"
+                placeholder="meter"
+                bind:value={rawInputUnit}
+            />
         </div>
     </div>
     <h2>Target</h2>
     <div id="targetContainer" class="container">
         <div>
             <p>Unit</p>
-            <input type="string" placeholder="len" bind:value={targetUnit} />
+            <input type="string" placeholder="len" bind:value={rawTargetUnit} />
         </div>
     </div>
     <div id="outputContainer" class="container">
