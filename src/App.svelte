@@ -7,17 +7,27 @@
         getPlanck,
         genericConvert,
     } from "./lib/convert";
-    import { type ScaledQuantity } from "./lib/vocab";
+    import { type ScaledQuantity, emptyPrefix } from "./lib/vocab";
 
     Decimal.set({ precision: 70 });
+
+    function displayScaledQuantity(quantity: ScaledQuantity): string {
+        return (
+            quantity.coeff.toNumber().toLocaleString() +
+            " " +
+            quantity.prefix.id +
+            (quantity.coeff.toNumber() === 1
+                ? quantity.unit.id
+                : quantity.unit.plural)
+        );
+    }
 
     let inputCoeff: string = $state("1");
     let inputPrefix: string = $state("kilo");
     let inputUnit: string = $state("meters");
     let targetUnit: string = $state("len");
-    let addPrefixToTarget: boolean = $state(false);
 
-    const convertedQuantity: ScaledQuantity = $derived(
+    const prefixedConvertedQuantity: ScaledQuantity = $derived(
         genericConvert(
             getPlanck({
                 coeff: Decimal(inputCoeff),
@@ -25,18 +35,29 @@
                 unit: lookupUnit(inputUnit),
             }),
             lookupUnit(targetUnit),
-            addPrefixToTarget,
+            true,
         ),
     );
 
-    const output = $derived(
-        convertedQuantity.coeff.toNumber().toLocaleString() +
-            " " +
-            convertedQuantity.prefix.id +
-            (convertedQuantity.coeff.toNumber() === 1
-                ? convertedQuantity.unit.id
-                : convertedQuantity.unit.plural),
-    );
+    let output: string = $derived.by(() => {
+        let result = displayScaledQuantity(prefixedConvertedQuantity);
+
+        if (prefixedConvertedQuantity.prefix !== emptyPrefix) {
+            const unprefixedConvertedQuantity: ScaledQuantity = genericConvert(
+                getPlanck({
+                    coeff: Decimal(inputCoeff),
+                    prefix: lookupPrefix(inputPrefix),
+                    unit: lookupUnit(inputUnit),
+                }),
+                lookupUnit(targetUnit),
+                false,
+            );
+
+            result += ` (${displayScaledQuantity(unprefixedConvertedQuantity)})`;
+        }
+
+        return result;
+    });
 </script>
 
 <main>
@@ -58,10 +79,6 @@
     </div>
     <h2>Target</h2>
     <div id="targetContainer" class="container">
-        <div>
-            <p>Add Prefix?</p>
-            <input type="checkbox" bind:checked={addPrefixToTarget} />
-        </div>
         <div>
             <p>Unit</p>
             <input type="string" placeholder="len" bind:value={targetUnit} />
