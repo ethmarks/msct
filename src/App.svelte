@@ -68,7 +68,7 @@
                 false,
             );
         } catch (e) {
-            return e;
+            return e instanceof Error ? e.message : "Unknown error";
         }
 
         let result = displayScaledQuantity(prefixedConvertedQuantity);
@@ -87,30 +87,22 @@
     <div id="inputContainer" class="container">
         <div>
             <p>Coefficient</p>
-            <input type="string" placeholder="1" bind:value={inputCoeff} />
+            <input type="text" placeholder="1" bind:value={inputCoeff} />
         </div>
         <div>
             <p>Prefix</p>
-            <input
-                type="string"
-                placeholder="kilo"
-                bind:value={rawInputPrefix}
-            />
+            <input type="text" placeholder="kilo" bind:value={rawInputPrefix} />
         </div>
         <div>
             <p>Unit</p>
-            <input
-                type="string"
-                placeholder="meter"
-                bind:value={rawInputUnit}
-            />
+            <input type="text" placeholder="meter" bind:value={rawInputUnit} />
         </div>
     </div>
     <h2>Target</h2>
     <div id="targetContainer" class="container">
         <div>
             <p>Unit</p>
-            <input type="string" placeholder="len" bind:value={rawTargetUnit} />
+            <input type="text" placeholder="len" bind:value={rawTargetUnit} />
         </div>
     </div>
     <div id="outputContainer" class="container">
