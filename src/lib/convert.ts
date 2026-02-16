@@ -22,7 +22,7 @@ export function lookupPrefix(prefixId: string): Prefix | undefined {
   }
 }
 
-export function lookupUnit(unitName: string): Unit | undefined {
+export function lookupUnit(unitName: string): Unit {
   const processedName = unitName.toLowerCase();
   for (const candidate of allUnits) {
     if (candidate.id === processedName) return candidate;
@@ -33,6 +33,7 @@ export function lookupUnit(unitName: string): Unit | undefined {
       }
     }
   }
+  throw new Error(`failed to look up unit ${unitName}`);
 }
 
 export function assertDimensionality(
@@ -90,7 +91,7 @@ export function bestPrefix(inputCoeff: Decimal): Prefix {
   ).prefix;
 }
 
-export function planckToCaesium(
+export function planckTimesToCaesium(
   inputPlanck: PlanckQuantity,
   targetCaesiumUnit: Unit,
   addPrefixIfPossible: boolean,
@@ -117,5 +118,89 @@ export function planckToCaesium(
     coeff,
     prefix,
     unit: targetCaesiumUnit,
+  };
+}
+
+export function planckLengthsToMeters(
+  inputPlanck: PlanckQuantity,
+  addPrefixIfPossible: boolean,
+): ScaledQuantity {
+  // validate inputs
+  assertDimensionality(inputPlanck.dimensionality, "length");
+
+  const meter = lookupUnit("meter");
+  const inputPlanckValue = inputPlanck.value;
+  const targetPlanckValue = meter.planck.value;
+  const unprefixedCoeff = inputPlanckValue.dividedBy(targetPlanckValue);
+
+  let coeff = unprefixedCoeff;
+  let prefix = emptyPrefix;
+
+  if (addPrefixIfPossible) {
+    prefix = bestPrefix(unprefixedCoeff);
+    coeff = unprefixedCoeff.dividedBy(prefix.magnitude);
+  }
+
+  return {
+    coeff,
+    prefix,
+    unit: meter,
+  };
+}
+
+export function planckLengthsToLens(
+  inputPlanck: PlanckQuantity,
+  addPrefixIfPossible: boolean,
+): ScaledQuantity {
+  // validate inputs
+  assertDimensionality(inputPlanck.dimensionality, "length");
+
+  const len = lookupUnit("len");
+  const inputPlanckValue = inputPlanck.value;
+  const targetPlanckValue = len.planck.value;
+  const unprefixedCoeff = inputPlanckValue.dividedBy(targetPlanckValue);
+
+  let coeff = unprefixedCoeff;
+  let prefix = emptyPrefix;
+
+  if (addPrefixIfPossible) {
+    prefix = bestPrefix(unprefixedCoeff);
+    coeff = unprefixedCoeff.dividedBy(prefix.magnitude);
+  }
+
+  return {
+    coeff,
+    prefix,
+    unit: len,
+  };
+}
+
+export function planckLengthsToCustomary(
+  inputPlanck: PlanckQuantity,
+  targetCustomaryUnit: Unit,
+  addPrefixIfPossible: boolean,
+): ScaledQuantity {
+  // validate inputs
+  assertDimensionality(inputPlanck.dimensionality, "length");
+  assertDimensionality(targetCustomaryUnit.planck.dimensionality, "length");
+  assertMeasurementSystem(targetCustomaryUnit.system, "customary");
+
+  const inputPlanckValue = inputPlanck.value;
+  const targetPlanckValue = targetCustomaryUnit.planck.value;
+
+  const unprefixedCoeff = inputPlanckValue.dividedBy(targetPlanckValue);
+
+  let coeff = unprefixedCoeff;
+  let prefix = emptyPrefix;
+
+  if (addPrefixIfPossible && targetCustomaryUnit.takesPrefixes) {
+    prefix = bestPrefix(unprefixedCoeff);
+    coeff = unprefixedCoeff.dividedBy(prefix.magnitude);
+  }
+
+  return {
+    coeff,
+    prefix,
+    unit: targetCustomaryUnit,
   };
 }
