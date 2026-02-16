@@ -11,7 +11,9 @@
         type ScaledQuantity,
         type Prefix,
         type Unit,
+        type Dimensionality,
         emptyPrefix,
+        allUnits,
     } from "./lib/vocab";
 
     Decimal.set({ precision: 70 });
@@ -45,7 +47,7 @@
                     prefix: lookupPrefix(rawInputPrefix),
                     unit: lookupUnit(rawInputUnit),
                 }),
-                lookupUnit(rawTargetUnit),
+                targetUnit,
                 false,
             );
         } catch (e) {
@@ -61,32 +63,47 @@
         return result;
     }
 
+    function listCompatibleUnits(inputDim: Dimensionality): Unit[] {
+        return allUnits.filter(
+            (unit) => unit.planck.dimensionality === inputDim,
+        );
+    }
+
     let inputCoeff: string = $state("1");
     let rawInputPrefix: string = $state("kilo");
     let rawInputUnit: string = $state("meters");
-    let rawTargetUnit: string = $state("len");
 
-    let output: string = $derived.by(() => {
+    let outputArray: string[] = $derived.by(() => {
         let inputPrefix: Prefix;
         let inputUnit: Unit;
-        let targetUnit: Unit;
 
         try {
             inputPrefix = lookupPrefix(rawInputPrefix);
             inputUnit = lookupUnit(rawInputUnit);
-            targetUnit = lookupUnit(rawTargetUnit);
         } catch {
-            return "Couldn't process input";
+            return ["Couldn't process input"];
         }
 
-        return convertAndDisplay(
-            {
-                coeff: Decimal(inputCoeff),
-                prefix: inputPrefix,
-                unit: inputUnit,
-            },
-            targetUnit,
+        const compatUnits = listCompatibleUnits(
+            inputUnit.planck.dimensionality,
         );
+
+        let outputString: string[] = [];
+
+        compatUnits.forEach((unit) =>
+            outputString.push(
+                convertAndDisplay(
+                    {
+                        coeff: Decimal(inputCoeff),
+                        prefix: inputPrefix,
+                        unit: inputUnit,
+                    },
+                    unit,
+                ),
+            ),
+        );
+
+        return outputString;
     });
 </script>
 
@@ -107,15 +124,10 @@
             <input type="text" placeholder="meter" bind:value={rawInputUnit} />
         </div>
     </div>
-    <h2>Target</h2>
-    <div id="targetContainer" class="container">
-        <div>
-            <p>Unit</p>
-            <input type="text" placeholder="len" bind:value={rawTargetUnit} />
-        </div>
-    </div>
-    <div id="outputContainer" class="container">
-        <p id="output">{output}</p>
+    <div id="outputContainer">
+        {#each outputArray as output}
+            <p>{output}</p>
+        {/each}
     </div>
 </main>
 
