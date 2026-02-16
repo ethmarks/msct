@@ -368,3 +368,65 @@ export function speedOfLightToMPH(inputPlanck: PlanckQuantity): ScaledQuantity {
     unit: mph,
   };
 }
+
+export function genericConvert(
+  inputPlanck: PlanckQuantity,
+  targetUnit: Unit,
+  addPrefixIfPossible: boolean,
+): ScaledQuantity {
+  // validate inputs
+  assertDimensionality(
+    inputPlanck.dimensionality,
+    targetUnit.planck.dimensionality,
+  );
+
+  switch (inputPlanck.dimensionality) {
+    case "time":
+      switch (targetUnit.system) {
+        case "marks":
+          return planckTimesToTims(inputPlanck, addPrefixIfPossible);
+        case "caesium":
+          return planckTimesToCaesium(
+            inputPlanck,
+            targetUnit,
+            addPrefixIfPossible,
+          );
+      }
+    case "length":
+      switch (targetUnit.system) {
+        case "marks":
+          return planckLengthsToLens(inputPlanck, addPrefixIfPossible);
+        case "metric":
+          return planckLengthsToMeters(inputPlanck, addPrefixIfPossible);
+        case "customary":
+          return planckLengthsToCustomary(inputPlanck, targetUnit);
+      }
+    case "mass":
+      switch (targetUnit.system) {
+        case "marks":
+          return planckMassesToMaz(inputPlanck, addPrefixIfPossible);
+        case "metric":
+          return planckMassesToGrams(inputPlanck, addPrefixIfPossible);
+        case "customary":
+          return planckMassesToCustomary(inputPlanck, targetUnit);
+      }
+    case "speed":
+      switch (targetUnit.system) {
+        case "marks":
+          return speedOfLightToVel(inputPlanck, addPrefixIfPossible);
+        case "metric":
+          switch (targetUnit.id) {
+            case "m/s":
+              return speedOfLightToMPS(inputPlanck);
+            case "kph":
+              return speedOfLightToKPH(inputPlanck);
+          }
+        case "customary":
+          return speedOfLightToMPH(inputPlanck);
+      }
+  }
+
+  throw new Error(
+    `targetUnit ${targetUnit.id} (somehow) did not match any case. This is probably a bug in the code.`,
+  );
+}
