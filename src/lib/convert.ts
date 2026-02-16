@@ -418,7 +418,7 @@ export function genericConvert(
           switch (targetUnit.id) {
             case "m/s":
               return speedOfLightToMPS(inputPlanck);
-            case "kph":
+            case "km/h":
               return speedOfLightToKPH(inputPlanck);
           }
         case "customary":

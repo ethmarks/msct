@@ -237,7 +237,7 @@ export const minute: Unit = {
   system: "caesium",
   takesPrefixes: false,
   planck: {
-    value: Decimal("1.112915064e45"), // https://www.wolframalpha.com/input?i=N%5B1+minute+in+Planck+times%2C+10%5D
+    value: second.planck.value.times(60),
     dimensionality: "time",
   },
 };
@@ -248,7 +248,7 @@ export const hour: Unit = {
   system: "caesium",
   takesPrefixes: false,
   planck: {
-    value: Decimal("6.677490384e46"), // https://www.wolframalpha.com/input?i=N%5B1+hour+in+Planck+times%2C+10%5D
+    value: minute.planck.value.times(60),
     dimensionality: "time",
   },
 };
@@ -268,7 +268,7 @@ export const week: Unit = {
   system: "caesium",
   takesPrefixes: false,
   planck: {
-    value: Decimal("1.121818385e49"), // https://www.wolframalpha.com/input?i=N%5B1+week+in+Planck+times%2C+10%5D
+    value: day.planck.value.times(7),
     dimensionality: "time",
   },
 };
@@ -298,7 +298,7 @@ export const decade: Unit = {
   system: "caesium",
   takesPrefixes: false,
   planck: {
-    value: Decimal("5.853362877e51"), // year plus 1 magnitude
+    value: year.planck.value.times(10),
     dimensionality: "time",
   },
 };
@@ -308,7 +308,7 @@ export const century: Unit = {
   system: "caesium",
   takesPrefixes: false,
   planck: {
-    value: Decimal("5.853362877e52"), // year plus 2 magnitude
+    value: year.planck.value.times(100),
     dimensionality: "time",
   },
 };
@@ -371,7 +371,7 @@ export const foot: Unit = {
   system: "customary",
   takesPrefixes: false,
   planck: {
-    value: Decimal("1.885841034e34"), // https://www.wolframalpha.com/input?i=N%5B1+foot+in+Planck+lengths%2C+10%5D
+    value: inch.planck.value.times(12),
     dimensionality: "length",
   },
 };
@@ -382,7 +382,7 @@ export const yard: Unit = {
   system: "customary",
   takesPrefixes: false,
   planck: {
-    value: Decimal("5.657523101e34"), // https://www.wolframalpha.com/input?i=N%5B1+yard+in+Planck+lengths%2C+10%5D
+    value: foot.planck.value.times(3),
     dimensionality: "length",
   },
 };
@@ -393,7 +393,7 @@ export const mile: Unit = {
   system: "customary",
   takesPrefixes: false,
   planck: {
-    value: Decimal("9.957240658e37"), // https://www.wolframalpha.com/input?i=N%5B1+mile+in+Planck+lengths%2C+10%5D
+    value: foot.planck.value.times(5280),
     dimensionality: "length",
   },
 };
@@ -427,7 +427,7 @@ export const gram: Unit = {
   system: "metric",
   takesPrefixes: true,
   planck: {
-    value: Decimal("45947"), // https://www.wolframalpha.com/input?i=1+gram+in+Planck+masses
+    value: Decimal("45946.71835"), // https://www.wolframalpha.com/input?i=N%5B1+gram+to+PlanckMass%2C+10%5D
     dimensionality: "mass",
   },
 };
@@ -437,7 +437,7 @@ export const tonne: Unit = {
   system: "metric",
   takesPrefixes: true,
   planck: {
-    value: Decimal("4.5947e10"), // https://www.wolframalpha.com/input?i=1+gram+in+Planck+masses
+    value: gram.planck.value.times(1e6),
     dimensionality: "mass",
   },
 };
@@ -449,7 +449,7 @@ export const pound: Unit = {
   system: "customary",
   takesPrefixes: false,
   planck: {
-    value: Decimal("20841208.62439"), // gram times 453.59237
+    value: Decimal("2.084108087e7"), // https://www.wolframalpha.com/input?i=N%5B1+pound+to+PlanckMass%2C+10%5D
     dimensionality: "mass",
   },
 };
@@ -460,7 +460,7 @@ export const ounce: Unit = {
   system: "customary",
   takesPrefixes: false,
   planck: {
-    value: Decimal("1.302575539e6"), // pound divided by 16
+    value: pound.planck.value.dividedBy(16),
     dimensionality: "mass",
   },
 };
@@ -471,7 +471,7 @@ export const dram: Unit = {
   system: "customary",
   takesPrefixes: false,
   planck: {
-    value: Decimal("81410.97118"), // pound divided by 256
+    value: pound.planck.value.dividedBy(256),
     dimensionality: "mass",
   },
 };
@@ -481,7 +481,7 @@ export const grain: Unit = {
   system: "customary",
   takesPrefixes: false,
   planck: {
-    value: Decimal("2977.315517"), // pound divided by 7000
+    value: pound.planck.value.dividedBy(7000),
     dimensionality: "mass",
   },
 };
@@ -492,7 +492,7 @@ export const quarter: Unit = {
   system: "customary",
   takesPrefixes: false,
   planck: {
-    value: Decimal("5.210302156e8"), // pound times 25
+    value: pound.planck.value.times(25),
     dimensionality: "mass",
   },
 };
@@ -502,7 +502,7 @@ export const ton: Unit = {
   system: "customary",
   takesPrefixes: false,
   planck: {
-    value: Decimal("4.168241724e10"), // pound times 2000
+    value: pound.planck.value.times(2000),
     dimensionality: "mass",
   },
 };
@@ -536,7 +536,8 @@ export const vel: Unit = {
 
 export const mps: Unit = {
   id: "m/s",
-  plural: "mps",
+  plural: "m/s",
+  aliases: ["mps"],
   system: "metric",
   takesPrefixes: false,
   planck: {
@@ -546,7 +547,8 @@ export const mps: Unit = {
 };
 export const kph: Unit = {
   id: "km/h",
-  plural: "kph",
+  plural: "km/h",
+  aliases: ["kph"],
   system: "metric",
   takesPrefixes: false,
   planck: {
