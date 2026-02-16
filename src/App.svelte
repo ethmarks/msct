@@ -17,14 +17,13 @@
     Decimal.set({ precision: 70 });
 
     function displayScaledQuantity(quantity: ScaledQuantity): string {
-        return (
-            quantity.coeff.toNumber().toLocaleString() +
-            " " +
-            quantity.prefix.id +
-            (quantity.coeff.toNumber() === 1
+        const coeffString: string = quantity.coeff.toPrecision(6).toString();
+        const prefixString: string = quantity.prefix.id;
+        const unitString: string =
+            quantity.coeff.toNumber() === 1
                 ? quantity.unit.id
-                : quantity.unit.plural)
-        );
+                : quantity.unit.plural;
+        return coeffString + " " + prefixString + unitString;
     }
 
     let inputCoeff: string = $state("1");
