@@ -10,7 +10,6 @@ import {
   allPrefixes,
   allUnits,
 } from "./vocab.ts";
-import { assert } from "node:test";
 
 Decimal.set({ precision: 70 });
 
@@ -103,7 +102,6 @@ export function planckTimesToCaesium(
 
   const inputPlanckValue = inputPlanck.value;
   const targetPlanckValue = targetCaesiumUnit.planck.value;
-
   const unprefixedCoeff = inputPlanckValue.dividedBy(targetPlanckValue);
 
   let coeff = unprefixedCoeff;
@@ -118,6 +116,33 @@ export function planckTimesToCaesium(
     coeff,
     prefix,
     unit: targetCaesiumUnit,
+  };
+}
+
+export function planckTimesToTims(
+  inputPlanck: PlanckQuantity,
+  addPrefixIfPossible: boolean,
+): ScaledQuantity {
+  // validate inputs
+  assertDimensionality(inputPlanck.dimensionality, "time");
+
+  const tim = lookupUnit("tim");
+  const inputPlanckValue = inputPlanck.value;
+  const targetPlanckValue = tim.planck.value;
+  const unprefixedCoeff = inputPlanckValue.dividedBy(targetPlanckValue);
+
+  let coeff = unprefixedCoeff;
+  let prefix = emptyPrefix;
+
+  if (addPrefixIfPossible) {
+    prefix = bestPrefix(unprefixedCoeff);
+    coeff = unprefixedCoeff.dividedBy(prefix.magnitude);
+  }
+
+  return {
+    coeff,
+    prefix,
+    unit: tim,
   };
 }
 
@@ -178,7 +203,6 @@ export function planckLengthsToLens(
 export function planckLengthsToCustomary(
   inputPlanck: PlanckQuantity,
   targetCustomaryUnit: Unit,
-  addPrefixIfPossible: boolean,
 ): ScaledQuantity {
   // validate inputs
   assertDimensionality(inputPlanck.dimensionality, "length");
@@ -187,13 +211,31 @@ export function planckLengthsToCustomary(
 
   const inputPlanckValue = inputPlanck.value;
   const targetPlanckValue = targetCustomaryUnit.planck.value;
+  const unprefixedCoeff = inputPlanckValue.dividedBy(targetPlanckValue);
 
+  return {
+    coeff: unprefixedCoeff,
+    prefix: emptyPrefix,
+    unit: targetCustomaryUnit,
+  };
+}
+
+export function planckMassesToGrams(
+  inputPlanck: PlanckQuantity,
+  addPrefixIfPossible: boolean,
+): ScaledQuantity {
+  // validate inputs
+  assertDimensionality(inputPlanck.dimensionality, "mass");
+
+  const gram = lookupUnit("gram");
+  const inputPlanckValue = inputPlanck.value;
+  const targetPlanckValue = gram.planck.value;
   const unprefixedCoeff = inputPlanckValue.dividedBy(targetPlanckValue);
 
   let coeff = unprefixedCoeff;
   let prefix = emptyPrefix;
 
-  if (addPrefixIfPossible && targetCustomaryUnit.takesPrefixes) {
+  if (addPrefixIfPossible) {
     prefix = bestPrefix(unprefixedCoeff);
     coeff = unprefixedCoeff.dividedBy(prefix.magnitude);
   }
@@ -201,6 +243,128 @@ export function planckLengthsToCustomary(
   return {
     coeff,
     prefix,
+    unit: gram,
+  };
+}
+
+export function planckMassesToMaz(
+  inputPlanck: PlanckQuantity,
+  addPrefixIfPossible: boolean,
+): ScaledQuantity {
+  // validate inputs
+  assertDimensionality(inputPlanck.dimensionality, "mass");
+
+  const maz = lookupUnit("maz");
+  const inputPlanckValue = inputPlanck.value;
+  const targetPlanckValue = maz.planck.value;
+  const unprefixedCoeff = inputPlanckValue.dividedBy(targetPlanckValue);
+
+  let coeff = unprefixedCoeff;
+  let prefix = emptyPrefix;
+
+  if (addPrefixIfPossible) {
+    prefix = bestPrefix(unprefixedCoeff);
+    coeff = unprefixedCoeff.dividedBy(prefix.magnitude);
+  }
+
+  return {
+    coeff,
+    prefix,
+    unit: maz,
+  };
+}
+
+export function planckMassesToCustomary(
+  inputPlanck: PlanckQuantity,
+  targetCustomaryUnit: Unit,
+): ScaledQuantity {
+  // validate inputs
+  assertDimensionality(inputPlanck.dimensionality, "mass");
+  assertDimensionality(targetCustomaryUnit.planck.dimensionality, "mass");
+  assertMeasurementSystem(targetCustomaryUnit.system, "customary");
+
+  const inputPlanckValue = inputPlanck.value;
+  const targetPlanckValue = targetCustomaryUnit.planck.value;
+  const unprefixedCoeff = inputPlanckValue.dividedBy(targetPlanckValue);
+
+  return {
+    coeff: unprefixedCoeff,
+    prefix: emptyPrefix,
     unit: targetCustomaryUnit,
+  };
+}
+
+export function speedOfLightToVel(
+  inputPlanck: PlanckQuantity,
+  addPrefixIfPossible: boolean,
+): ScaledQuantity {
+  // validate inputs
+  assertDimensionality(inputPlanck.dimensionality, "speed");
+
+  const vel = lookupUnit("vel");
+  const inputPlanckValue = inputPlanck.value;
+  const targetPlanckValue = vel.planck.value;
+  const unprefixedCoeff = inputPlanckValue.dividedBy(targetPlanckValue);
+
+  let coeff = unprefixedCoeff;
+  let prefix = emptyPrefix;
+
+  if (addPrefixIfPossible) {
+    prefix = bestPrefix(unprefixedCoeff);
+    coeff = unprefixedCoeff.dividedBy(prefix.magnitude);
+  }
+
+  return {
+    coeff,
+    prefix,
+    unit: vel,
+  };
+}
+
+export function speedOfLightToMPS(inputPlanck: PlanckQuantity): ScaledQuantity {
+  // validate inputs
+  assertDimensionality(inputPlanck.dimensionality, "speed");
+
+  const mps = lookupUnit("m/s");
+  const inputPlanckValue = inputPlanck.value;
+  const targetPlanckValue = mps.planck.value;
+  const unprefixedCoeff = inputPlanckValue.dividedBy(targetPlanckValue);
+
+  return {
+    coeff: unprefixedCoeff,
+    prefix: emptyPrefix,
+    unit: mps,
+  };
+}
+
+export function speedOfLightToKPH(inputPlanck: PlanckQuantity): ScaledQuantity {
+  // validate inputs
+  assertDimensionality(inputPlanck.dimensionality, "speed");
+
+  const kph = lookupUnit("kph");
+  const inputPlanckValue = inputPlanck.value;
+  const targetPlanckValue = kph.planck.value;
+  const unprefixedCoeff = inputPlanckValue.dividedBy(targetPlanckValue);
+
+  return {
+    coeff: unprefixedCoeff,
+    prefix: emptyPrefix,
+    unit: kph,
+  };
+}
+
+export function speedOfLightToMPH(inputPlanck: PlanckQuantity): ScaledQuantity {
+  // validate inputs
+  assertDimensionality(inputPlanck.dimensionality, "speed");
+
+  const mph = lookupUnit("mph");
+  const inputPlanckValue = inputPlanck.value;
+  const targetPlanckValue = mph.planck.value;
+  const unprefixedCoeff = inputPlanckValue.dividedBy(targetPlanckValue);
+
+  return {
+    coeff: unprefixedCoeff,
+    prefix: emptyPrefix,
+    unit: mph,
   };
 }

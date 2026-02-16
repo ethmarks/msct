@@ -538,7 +538,7 @@ export const mps: Unit = {
   id: "m/s",
   plural: "mps",
   system: "metric",
-  takesPrefixes: true,
+  takesPrefixes: false,
   planck: {
     value: Decimal("3.335640952e-9"),
     dimensionality: "speed",
