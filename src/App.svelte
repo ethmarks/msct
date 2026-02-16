@@ -17,7 +17,7 @@
     Decimal.set({ precision: 70 });
 
     function displayScaledQuantity(quantity: ScaledQuantity): string {
-        const coeffString: string = quantity.coeff.toPrecision(6).toString();
+        const coeffString: string = quantity.coeff.toPrecision(4).toString();
         const prefixString: string = quantity.prefix.id;
         const unitString: string =
             quantity.coeff.toNumber() === 1
@@ -26,34 +26,16 @@
         return coeffString + " " + prefixString + unitString;
     }
 
-    let inputCoeff: string = $state("1");
-    let rawInputPrefix: string = $state("kilo");
-    let rawInputUnit: string = $state("meters");
-    let rawTargetUnit: string = $state("len");
-
-    let output: string = $derived.by(() => {
-        let inputPrefix: Prefix;
-        let inputUnit: Unit;
-        let targetUnit: Unit;
-
-        try {
-            inputPrefix = lookupPrefix(rawInputPrefix);
-            inputUnit = lookupUnit(rawInputUnit);
-            targetUnit = lookupUnit(rawTargetUnit);
-        } catch {
-            return "Couldn't process input";
-        }
-
+    function convertAndDisplay(
+        input: ScaledQuantity,
+        targetUnit: Unit,
+    ): string {
         let prefixedConvertedQuantity: ScaledQuantity;
         let unprefixedConvertedQuantity: ScaledQuantity;
 
         try {
             prefixedConvertedQuantity = genericConvert(
-                getPlanck({
-                    coeff: Decimal(inputCoeff),
-                    prefix: inputPrefix,
-                    unit: inputUnit,
-                }),
+                getPlanck(input),
                 targetUnit,
                 true,
             );
@@ -77,6 +59,34 @@
         }
 
         return result;
+    }
+
+    let inputCoeff: string = $state("1");
+    let rawInputPrefix: string = $state("kilo");
+    let rawInputUnit: string = $state("meters");
+    let rawTargetUnit: string = $state("len");
+
+    let output: string = $derived.by(() => {
+        let inputPrefix: Prefix;
+        let inputUnit: Unit;
+        let targetUnit: Unit;
+
+        try {
+            inputPrefix = lookupPrefix(rawInputPrefix);
+            inputUnit = lookupUnit(rawInputUnit);
+            targetUnit = lookupUnit(rawTargetUnit);
+        } catch {
+            return "Couldn't process input";
+        }
+
+        return convertAndDisplay(
+            {
+                coeff: Decimal(inputCoeff),
+                prefix: inputPrefix,
+                unit: inputUnit,
+            },
+            targetUnit,
+        );
     });
 </script>
 
