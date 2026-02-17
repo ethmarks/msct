@@ -392,6 +392,8 @@ export function genericConvert(
             targetUnit,
             addPrefixIfPossible,
           );
+        default:
+          throw new Error(`Unsupported system for time: ${targetUnit.system}`);
       }
     case "length":
       switch (targetUnit.system) {
@@ -401,6 +403,10 @@ export function genericConvert(
           return planckLengthsToMeters(inputPlanck, addPrefixIfPossible);
         case "customary":
           return planckLengthsToCustomary(inputPlanck, targetUnit);
+        default:
+          throw new Error(
+            `Unsupported system for length: ${targetUnit.system}`,
+          );
       }
     case "mass":
       switch (targetUnit.system) {
@@ -410,6 +416,8 @@ export function genericConvert(
           return planckMassesToGrams(inputPlanck, addPrefixIfPossible);
         case "customary":
           return planckMassesToCustomary(inputPlanck, targetUnit);
+        default:
+          throw new Error(`Unsupported system for mass: ${targetUnit.system}`);
       }
     case "speed":
       switch (targetUnit.system) {
@@ -421,13 +429,15 @@ export function genericConvert(
               return speedOfLightToMPS(inputPlanck);
             case "km/h":
               return speedOfLightToKPH(inputPlanck);
+            default:
+              throw new Error(
+                `Unsupported metric speed unit: ${targetUnit.id}`,
+              );
           }
         case "customary":
           return speedOfLightToMPH(inputPlanck);
+        default:
+          throw new Error(`Unsupported system for speed: ${targetUnit.system}`);
       }
   }
-
-  throw new Error(
-    `targetUnit ${targetUnit.id} (somehow) did not match any case. This is probably a bug in the code.`,
-  );
 }
