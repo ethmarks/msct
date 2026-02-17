@@ -149,7 +149,7 @@
 
     let rawInput: string = $state("1 len");
 
-    let outputArray: string[] = $derived.by(() => {
+    let output: string[] = $derived.by(() => {
         let parsedInput: ScaledQuantity;
 
         try {
@@ -166,13 +166,36 @@
             parsedInput.unit.planck.dimensionality,
         );
 
-        let outputString: string[] = [];
+        let convertedUnits: { display: string; coeff: Decimal }[] = [];
 
-        compatUnits.forEach((unit) =>
-            outputString.push(convertAndDisplay(parsedInput, unit)),
-        );
+        compatUnits.forEach((unit) => {
+            let prefixedConvertedQuantity: ScaledQuantity;
 
-        return outputString;
+            try {
+                prefixedConvertedQuantity = genericConvert(
+                    getPlanck(parsedInput),
+                    unit,
+                    true,
+                );
+            } catch (e) {
+                return;
+            }
+
+            convertedUnits.push({
+                display: convertAndDisplay(parsedInput, unit),
+                coeff: prefixedConvertedQuantity.coeff,
+            });
+        });
+
+        // Sort by closeness of coefficient to 1
+        convertedUnits.sort((a, b) => {
+            const distA = Decimal.log10(a.coeff.abs()).abs();
+            const distB = Decimal.log10(b.coeff.abs()).abs();
+
+            return distA.comparedTo(distB);
+        });
+
+        return convertedUnits.map((item) => item.display);
     });
 </script>
 
@@ -183,8 +206,8 @@
         <input type="text" placeholder="1 len" bind:value={rawInput} />
     </div>
     <div id="outputContainer">
-        {#each outputArray as output}
-            <p>{output}</p>
+        {#each output as outputString}
+            <p>{outputString}</p>
         {/each}
     </div>
 </main>
