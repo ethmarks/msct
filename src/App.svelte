@@ -18,8 +18,55 @@
 
     Decimal.set({ precision: 70 });
 
+    /**
+     * Formats a coefficient for display:
+     * - Scientific notation (ax10^b) for |value| >= 10^7 or |value| < 10^-5
+     * - 2 decimal places (without trailing zeros) for 1 <= |value| < 100
+     * - Comma separators for 1000 <= |value| < 10^7
+     * - No decimals for 100 <= |value| < 10^7
+     * - Normal notation for 10^-5 <= |value| < 10^7
+     */
+    function formatCoefficient(coeff: Decimal): string {
+        const absValue = coeff.abs().toNumber();
+
+        // Use scientific notation for extreme values
+        if (absValue >= 1e7 || (absValue < 1e-5 && absValue !== 0)) {
+            const exponent = Math.floor(Math.log10(absValue));
+            const mantissa = coeff.div(Decimal(10).pow(exponent));
+            const mantissaStr = mantissa.toFixed(2).replace(/\.?0+$/, "");
+
+            // Simplify "1×10^b" to just "10^b"
+            if (mantissaStr === "1") {
+                return `10^${exponent}`;
+            }
+
+            return `${mantissaStr}×10^${exponent}`;
+        }
+
+        // Normal notation with smart decimal handling
+        if (absValue >= 1000) {
+            // Add comma separators for values >= 1000
+            const num = coeff.toFixed(0);
+            return num.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        } else if (absValue >= 100) {
+            // No decimals for values between 100 and 1000
+            return coeff.toFixed(0);
+        } else if (absValue >= 1) {
+            // 2 decimal places (without trailing zeros) for values between 1 and 100
+            return coeff.toFixed(2).replace(/\.?0+$/, "");
+        } else if (absValue === 0) {
+            return "0";
+        } else {
+            // For values between 10^-5 and 1, show 2 significant non-zero decimals
+            const str = coeff.toFixed(10); // Get enough decimals
+            const match = str.match(/^-?0\.0*[1-9]\d?/);
+            const result = match ? match[0] : coeff.toFixed(2);
+            return result.replace(/\.?0+$/, ""); // Remove trailing zeros
+        }
+    }
+
     function displayScaledQuantity(quantity: ScaledQuantity): string {
-        const coeffString: string = quantity.coeff.toPrecision(4).toString();
+        const coeffString: string = formatCoefficient(quantity.coeff);
         const prefixString: string = quantity.prefix.id;
         const unitString: string =
             quantity.coeff.toNumber() === 1
