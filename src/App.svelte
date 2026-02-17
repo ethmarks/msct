@@ -120,6 +120,31 @@
         return result;
     }
 
+    function normalizeScientificNotation(input: string): string {
+        const regex =
+            /(\d*\.?\d+)\s*(?:[×x*·]\s*10|10)(?:\^|\*\*)?\s*([+-]?\d+)/gi;
+        return input.replace(regex, (_match, coefficient, exponent) => {
+            return `${coefficient}e${exponent}`;
+        });
+    }
+
+    function parseCoeff(input: string): Decimal {
+        try {
+            // try to parse it normally
+            return Decimal(input);
+        } catch {
+            // if we get errors, try normalizeScientificNotation()
+            try {
+                return Decimal(normalizeScientificNotation(input));
+            } catch {
+                // if we still get errors, give up and throw an error
+                throw new Error(
+                    "Failed to parse coefficient; please use standard scientific notation (e.g. 1.6e-4).",
+                );
+            }
+        }
+    }
+
     function parseInput(input: string): ScaledQuantity {
         const splitInput = input.trim().toLowerCase().split(" ");
 
@@ -133,7 +158,7 @@
                 ({ prefix, unit } = parsePrefixedUnitString(splitInput[0]));
                 break;
             case 2: // coeff + prefixed unit
-                coeff = Decimal(splitInput[0]);
+                coeff = Decimal(parseCoeff(splitInput[0]));
                 ({ prefix, unit } = parsePrefixedUnitString(splitInput[1]));
                 break;
             default: // too many spaces; invalid input
