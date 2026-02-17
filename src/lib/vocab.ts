@@ -580,6 +580,7 @@ export const allUnits: Unit[] = [
   ...allMassUnits,
   ...allSpeedUnits,
 ];
+export const unitsNotToOutputTo: string[] = ["tonne"];
 
 export const allMarksUnits = allUnits.filter((unit) => unit.system === "marks");
 export const allMetricUnits = allUnits.filter(

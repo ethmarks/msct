@@ -1,12 +1,7 @@
 <script lang="ts">
     import Decimal from "decimal.js";
 
-    import {
-        lookupPrefix,
-        lookupUnit,
-        getPlanck,
-        genericConvert,
-    } from "./lib/convert";
+    import { getPlanck, genericConvert } from "./lib/convert";
     import {
         type ScaledQuantity,
         type Prefix,
@@ -14,6 +9,7 @@
         type Dimensionality,
         emptyPrefix,
         allUnits,
+        unitsNotToOutputTo,
         unitLookup,
     } from "./lib/vocab";
 
@@ -109,7 +105,9 @@
 
     function listCompatibleUnits(inputDim: Dimensionality): Unit[] {
         return allUnits.filter(
-            (unit) => unit.planck.dimensionality === inputDim,
+            (unit) =>
+                unit.planck.dimensionality === inputDim &&
+                !unitsNotToOutputTo.includes(unit.id),
         );
     }
 
