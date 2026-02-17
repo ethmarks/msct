@@ -27,7 +27,7 @@ The Marks system also specifies a few new SI prefixes, which are listed [here](h
 
 ## Why?
 
-I wanted to be able to easily convert between Marks units and normal units, both for myself and for any readers of my post. Obviously, no existing unit conversion tool supported the Marks system, so I decided to make my own. msct is the result.
+I wanted a tool that could natively handle Marks units so that my post's readers could experiment with the Marks system. Obviously, no existing unit conversion tool supported the Marks system, so I decided to make my own. msct is the result.
 
 ## Frontend
 
@@ -90,11 +90,11 @@ Given the input "29032 feet" (the height of Mount Everest), msct gives the follo
 > 8.85 kilometers (8,849 meters) \
 > 9,677 yards \
 > 29,032 feet \
-> 348,384 inches \
+> 348,384 inches
 
 ## Troubleshooting
 
-If msct emits a quantifiably incorrect conversion (please verify it via Wolfram Alpha) or if it fails to parse an input that it should be able to parse, please let me know by [opening an issue](https://github.com/ethmarks/msct/issues).
+If msct emits an incorrect conversion (please verify it via Wolfram Alpha) or if it fails to parse an input that it should be able to parse, please let me know by [opening an issue](https://github.com/ethmarks/msct/issues).
 
 ## License
 
