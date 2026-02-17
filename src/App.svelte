@@ -172,9 +172,7 @@
         };
     }
 
-    const initialInput = "1.6e4 millilen";
-
-    let rawInput: string = $state(initialInput);
+    let rawInput: string = $state("");
 
     let output: string[] = $derived.by(() => {
         let parsedInput: ScaledQuantity;
@@ -228,11 +226,56 @@
 
 <main>
     <h1>Marks System Converter Tool (msct)</h1>
+    <p>
+        <a href="https://github.com/ethmarks/msct">msct</a> is a utility that
+        converts between the
+        <a href="https://site-ethmarks.vercel.app/posts/measurement"
+            >Marks system</a
+        >, metric system, and customary system.
+    </p>
+
+    <details>
+        <summary>How to use msct</summary>
+        <p>
+            msct inputs come in two parts: a coefficient and a unit. The
+            coefficient is optional and defaults to 1, but the unit is
+            mandatory.
+        </p>
+        <p>The coefficient can be a simple number or in scientific notation.</p>
+        <p>
+            The unit can optionally begin with a prefix (e.g. "kilo") and must
+            end with a recognized unit of measurement.
+        </p>
+        <p>An example input is "1.6e3 decilens".</p>
+        <p>Recognized units of measurement are:</p>
+        <ul>
+            {#each allUnits as unit}
+                <li>
+                    {unit.id}
+                    {unit.aliases ? `(${unit.aliases.join(", ")})` : ""}
+                </li>
+            {/each}
+        </ul>
+        <hr />
+        <p>
+            msct will process your input by converting it into every compatible
+            unit.
+        </p>
+        <p>
+            For units that accept prefixes, it will automatically add them but
+            include the base value in parenthesis.
+        </p>
+        <p>
+            The converted units are sorted based on how close their coefficients
+            are to 1, indicating how good of a match they are to the input.
+        </p>
+    </details>
+    <hr />
     <form id="converter">
         <input
             id="unifiedInput"
             type="text"
-            placeholder={initialInput}
+            placeholder="1 len"
             bind:value={rawInput}
         />
         <output for="unifiedInput">
@@ -242,13 +285,34 @@
         </output>
     </form>
 </main>
+<footer>
+    <p>
+        Created by <a href="https://github.com/ethmarks">ethmarks</a>
+        |
+        <a href="https://github.com/ethmarks/msct">Source Code</a>
+    </p>
+</footer>
 
 <style>
     form {
         display: flex;
         flex-direction: column;
     }
+    summary {
+        font-weight: 400;
+    }
     input {
         width: 100%;
+        padding: 0.6rem 1rem;
+        font-weight: 600;
+        outline: #447ae5 solid 0.1rem;
+        transition: outline-width 0.1s;
+    }
+    input:active,
+    input:focus {
+        outline-width: 0.2rem;
+    }
+    footer {
+        text-align: center;
     }
 </style>
