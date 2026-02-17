@@ -27,17 +27,17 @@ The Marks system also specifies a few new SI prefixes, which are listed [here](h
 
 ## Why?
 
-I wanted a tool that could natively handle Marks units so that my post's readers could experiment with the Marks system. Obviously, no existing unit conversion tool supported the Marks system, so I decided to make my own. msct is the result.
+I wanted a tool that could natively handle Marks units so that my readers could experiment with the Marks system. Obviously, no existing unit conversion tool supported the Marks system, so I decided to make my own. msct is the result.
 
 ## Frontend
 
-msct is a Vite+Svelte app using Deno. I chose to use native Vite instead of SvelteKit because I don't need _any_ of SvelteKit's features and I'd prefer to avoid the complexity and mild bloat that comes with it. Because it uses Vite+Svelte, msct is fully static, renders the page on the client side, and performs all computations in the browser.
+msct is a Vite+Svelte app using Deno. I chose to use native Vite instead of SvelteKit because I don't need any of SvelteKit's features and I'd prefer to avoid the complexity and mild bloat that comes with it. Because it uses Vite+Svelte, msct is fully static, renders the page on the client side, and performs all computations in the browser.
 
-msct uses [dev.css](https://devcss.devins.page/) for styling. dev.css is sleek, stylish, responsive, and (most importantly) is just a classless stylesheet that required a single-digit number of keystrokes to add.
+msct uses [dev.css](https://devcss.devins.page/) for styling. dev.css is sleek, stylish, responsive, and (most importantly) is just a classless stylesheet that required a single-digit number of keystrokes for me to add.
 
 ## Backend
 
-msct uses a custom TypeScript-based unit conversion engine, powered by `decimal.js`.
+msct uses a custom unit conversion engine written in TypeScript, powered by `decimal.js`.
 
 It's split into three sections: a vocabulary, a miniature conversion library, and a renderer.
 
