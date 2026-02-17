@@ -135,7 +135,9 @@
         } catch {
             // if we get errors, try normalizeScientificNotation()
             try {
-                return Decimal(normalizeScientificNotation(input));
+                return Decimal(
+                    normalizeScientificNotation(input.replaceAll(",", "")),
+                );
             } catch {
                 // if we still get errors, give up and throw an error
                 throw new Error(
