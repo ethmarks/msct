@@ -8,7 +8,7 @@ msct (Marks System Converter Tool) is a utility that converts between the [Marks
 
 I've already written over 7,000 words about the Marks system in [this post](https://site-ethmarks.vercel.app/posts/measurement), so I won't describe it in depth here.
 
-The relevant part to msct is that the Marks system specifies a few new units of measurement:
+The relevant part of the Marks system is that it specifies a few new units of measurement:
 
 | Unit | Definition            |
 | ---- | --------------------- |
@@ -69,7 +69,7 @@ The main pipeline takes the raw input string, passes it through `parseInput()`, 
 
 As a sample of what some of the helper functions do, `normalizeScientificNotation()` uses a black magic regex to convert the various different formats for scientific notation into the format that `decimal.js` prefers and will most reliably parse.
 
-## Development
+## Developing
 
 First, [install Deno](https://docs.deno.com/runtime/getting_started/installation/) if you haven't already. Then, run the following commands to download msct, start the dev server, and open it in your browser. Deno will automatically install the necessary dependencies.
 
@@ -83,7 +83,7 @@ Once the dev server is running, open <http://localhost:5173/> in your browser.
 
 ## Example
 
-Given the input "29032 feet" (the height of Mount Everest), msct gives the following output:
+Given the input "2.9032e4 feet" (the height of Mount Everest), msct gives the following output:
 
 > 5.47 myrialens (54,750 lens) \
 > 5.5 miles \
