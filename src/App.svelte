@@ -172,7 +172,9 @@
         };
     }
 
-    let rawInput: string = $state("1 len");
+    const initialInput = "1.6e4 millilen";
+
+    let rawInput: string = $state(initialInput);
 
     let output: string[] = $derived.by(() => {
         let parsedInput: ScaledQuantity;
@@ -226,23 +228,27 @@
 
 <main>
     <h1>Marks System Converter Tool (msct)</h1>
-    <h2>Input</h2>
-    <div id="inputContainer" class="container">
-        <input type="text" placeholder="1 len" bind:value={rawInput} />
-    </div>
-    <div id="outputContainer">
-        {#each output as outputString}
-            <p>{outputString}</p>
-        {/each}
-    </div>
+    <form id="converter">
+        <input
+            id="unifiedInput"
+            type="text"
+            placeholder={initialInput}
+            bind:value={rawInput}
+        />
+        <output for="unifiedInput">
+            {#each output as outputString}
+                {outputString}<br />
+            {/each}
+        </output>
+    </form>
 </main>
 
 <style>
-    .container {
+    form {
         display: flex;
-        gap: 1rem;
+        flex-direction: column;
     }
-    .container input {
+    input {
         width: 100%;
     }
 </style>
