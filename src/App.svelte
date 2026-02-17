@@ -14,6 +14,7 @@
         type Dimensionality,
         emptyPrefix,
         allUnits,
+        unitLookup,
     } from "./lib/vocab";
 
     Decimal.set({ precision: 70 });
@@ -89,11 +90,7 @@
                 true,
             );
             unprefixedConvertedQuantity = genericConvert(
-                getPlanck({
-                    coeff: Decimal(inputCoeff),
-                    prefix: lookupPrefix(rawInputPrefix),
-                    unit: lookupUnit(rawInputUnit),
-                }),
+                getPlanck(input),
                 targetUnit,
                 false,
             );
@@ -116,38 +113,65 @@
         );
     }
 
-    let inputCoeff: string = $state("1");
-    let rawInputPrefix: string = $state("kilo");
-    let rawInputUnit: string = $state("meters");
+    function parsePrefixedUnitString(input: string): {
+        prefix: Prefix;
+        unit: Unit;
+    } {
+        const result = unitLookup.get(input);
+        if (!result) throw new Error();
+        return result;
+    }
+
+    function parseInput(input: string): ScaledQuantity {
+        const splitInput = input.trim().toLowerCase().split(" ");
+
+        let coeff: Decimal;
+        let prefix: Prefix;
+        let unit: Unit;
+
+        switch (splitInput.length) {
+            case 1: // just prefixed unit
+                coeff = Decimal(1);
+                ({ prefix, unit } = parsePrefixedUnitString(splitInput[0]));
+                break;
+            case 2: // coeff + prefixed unit
+                coeff = Decimal(splitInput[0]);
+                ({ prefix, unit } = parsePrefixedUnitString(splitInput[1]));
+                break;
+            default: // too many spaces; invalid input
+                throw new Error();
+        }
+
+        return {
+            coeff,
+            prefix,
+            unit,
+        };
+    }
+
+    let rawInput: string = $state("1 len");
 
     let outputArray: string[] = $derived.by(() => {
-        let inputPrefix: Prefix;
-        let inputUnit: Unit;
+        let parsedInput: ScaledQuantity;
 
         try {
-            inputPrefix = lookupPrefix(rawInputPrefix);
-            inputUnit = lookupUnit(rawInputUnit);
-        } catch {
-            return ["Couldn't process input"];
+            parsedInput = parseInput(rawInput);
+        } catch (e) {
+            return [e instanceof Error ? e.message : "Couldn't process input"];
+        }
+
+        if (typeof parsedInput === "string") {
+            return [parsedInput];
         }
 
         const compatUnits = listCompatibleUnits(
-            inputUnit.planck.dimensionality,
+            parsedInput.unit.planck.dimensionality,
         );
 
         let outputString: string[] = [];
 
         compatUnits.forEach((unit) =>
-            outputString.push(
-                convertAndDisplay(
-                    {
-                        coeff: Decimal(inputCoeff),
-                        prefix: inputPrefix,
-                        unit: inputUnit,
-                    },
-                    unit,
-                ),
-            ),
+            outputString.push(convertAndDisplay(parsedInput, unit)),
         );
 
         return outputString;
@@ -158,18 +182,7 @@
     <h1>Marks System Converter Tool (msct)</h1>
     <h2>Input</h2>
     <div id="inputContainer" class="container">
-        <div>
-            <p>Coefficient</p>
-            <input type="text" placeholder="1" bind:value={inputCoeff} />
-        </div>
-        <div>
-            <p>Prefix</p>
-            <input type="text" placeholder="kilo" bind:value={rawInputPrefix} />
-        </div>
-        <div>
-            <p>Unit</p>
-            <input type="text" placeholder="meter" bind:value={rawInputUnit} />
-        </div>
+        <input type="text" placeholder="1 len" bind:value={rawInput} />
     </div>
     <div id="outputContainer">
         {#each outputArray as output}
