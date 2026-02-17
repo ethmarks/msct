@@ -591,3 +591,29 @@ export const allCustomaryUnits = allUnits.filter(
 export const allCaesiumUnits = allUnits.filter(
   (unit) => unit.system === "caesium",
 );
+
+export const unitLookup = new Map<string, { prefix: Prefix; unit: Unit }>();
+
+for (const unit of allUnits) {
+  const unitStrings = [unit.id, unit.plural, ...(unit.aliases || [])];
+
+  if (unit.takesPrefixes) {
+    // Add all prefix+unit combinations
+    for (const unitString of unitStrings) {
+      for (const prefix of allPrefixes) {
+        const combined = prefix.id + unitString; // e.g., "kilosecond"
+        const combinedSymbol = prefix.symbol + unitString; // e.g., "ks"
+
+        unitLookup.set(combined, { prefix, unit });
+        if (prefix.symbol !== prefix.id) {
+          unitLookup.set(combinedSymbol, { prefix, unit });
+        }
+      }
+    }
+  } else {
+    // Add just the unit without any prefix
+    for (const unitString of unitStrings) {
+      unitLookup.set(unitString, { prefix: emptyPrefix, unit });
+    }
+  }
+}
