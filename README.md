@@ -1,5 +1,7 @@
 # msct
 
+![A screenshot of msct with the input "42 lens" and six conversions, including "4.2 decalens (42 lens)", "6.79 meters", and "7.42 yards"](./.github/msct_screenshot.png)
+
 msct (Marks System Converter Tool) is a utility that converts between the [Marks system](https://site-ethmarks.vercel.app/posts/measurement), metric system, and customary system.
 
 ## Marks System
@@ -16,6 +18,12 @@ The relevant part to msct is that the Marks system specifies a few new units of 
 | Vel  | 10^-10 speed of light |
 
 The Marks system also specifies a few new SI prefixes, which are listed [here](https://site-ethmarks.vercel.app/posts/measurement#marks-prefixes).
+
+## Usage
+
+1. Visit <https://msct.vercel.app/>
+2. Type a unit expression into the input field (if you need help, expand the "How to use msct" dropdown)
+3. Read the output
 
 ## Why?
 
@@ -61,13 +69,7 @@ The main pipeline takes the raw input string, passes it through `parseInput()`, 
 
 As a sample of what some of the helper functions do, `normalizeScientificNotation()` uses a black magic regex to convert the various different formats for scientific notation into the format that `decimal.js` prefers and will most reliably parse.
 
-## Usage
-
-1. Visit <https://msct.vercel.app/>
-2. Type a unit expression into the input field (if you need help, expand the "How to use msct" dropdown)
-3. Read the output
-
-## Local Installation
+## Development
 
 First, [install Deno](https://docs.deno.com/runtime/getting_started/installation/) if you haven't already. Then, run the following commands to download msct, start the dev server, and open it in your browser. Deno will automatically install the necessary dependencies.
 
