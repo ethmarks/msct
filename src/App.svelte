@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Decimal from "decimal.js";
+    import { Decimal } from "decimal.js";
 
     import { getPlanck, genericConvert } from "./lib/convert";
     import {
