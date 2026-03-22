@@ -6,7 +6,7 @@ msct (Marks System Converter Tool) is a utility that converts between the [Marks
 
 ## Marks System
 
-I've already written over 7,000 words about the Marks system in [this post](https://site-ethmarks.vercel.app/posts/measurement), so I won't describe it in depth here.
+I've already written about the Marks system at length in [this post](https://site-ethmarks.vercel.app/posts/measurement), so I won't describe it in depth here.
 
 The relevant part of the Marks system is that it specifies a few new units of measurement:
 
